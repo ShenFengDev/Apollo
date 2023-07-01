@@ -75,7 +75,7 @@ public class HUD : Module() {
             "apollo"->{
                 val time = SimpleDateFormat("HH:mm").format(Calendar.getInstance().time)
                 RenderUtils.drawOutlinedRect(2f,
-                    5.5f,FontLoaders.NL24.getStringWidth("Liquidbounce | $time ")+7.5f,FontLoaders.NL24.FONT_HEIGHT.toFloat(),1,ColorUtils.fade(Color(255,255,255,255),999,5),Color.black)
+                    5.5f,FontLoaders.NL24.getStringWidth("Liquidbounce | $time ")+7.5f,FontLoaders.NL24.FONT_HEIGHT.toFloat(),0.8,ColorUtils.fade(Color(255,255,255,255),999,5),Color.black)
                 //RenderUtils.drawRect(2f,5.5f,FontLoaders.NL24.getStringWidth("LiquidBounce | $time")+4f,FontLoaders.NL24.FONT_HEIGHT-0.8f,Color.black.rgb)
                 FontLoaders.NL24.drawString(
                     "LiquidBounce",

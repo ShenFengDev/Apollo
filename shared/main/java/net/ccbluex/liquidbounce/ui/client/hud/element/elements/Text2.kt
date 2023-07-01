@@ -171,9 +171,9 @@ class Text2(
             }
             "skeet" -> {
                 RenderUtils.drawRect(-11, -11, (FontLoaders.F24.getStringWidth(displayText) + 10), FontLoaders.F24.height + 8, Color(0, 0, 0).rgb)
-                RenderUtils.drawOutlinedRect(-10f, -10f, (FontLoaders.F24.getStringWidth(displayText) + 9).toFloat(), FontLoaders.F24.height + 7f, 8, Color(59, 59, 59), Color(59, 59, 59))
-                RenderUtils.drawOutlinedRect(-9f, -9f, (FontLoaders.F24.getStringWidth(displayText) + 8).toFloat(), FontLoaders.F24.height + 6f, 4, Color(59, 59, 59), Color(40, 40, 40))
-                RenderUtils.drawOutlinedRect(-4f, -4f, (FontLoaders.F24.getStringWidth(displayText) + 3).toFloat(), FontLoaders.F24.height + 1f, 1, Color(18, 18, 18), Color(0, 0, 0))
+                RenderUtils.drawOutlinedRect(-10f, -10f, (FontLoaders.F24.getStringWidth(displayText) + 9).toFloat(), FontLoaders.F24.height + 7f, 8.0, Color(59, 59, 59), Color(59, 59, 59))
+                RenderUtils.drawOutlinedRect(-9f, -9f, (FontLoaders.F24.getStringWidth(displayText) + 8).toFloat(), FontLoaders.F24.height + 6f, 4.0, Color(59, 59, 59), Color(40, 40, 40))
+                RenderUtils.drawOutlinedRect(-4f, -4f, (FontLoaders.F24.getStringWidth(displayText) + 3).toFloat(), FontLoaders.F24.height + 1f, 1.0, Color(18, 18, 18), Color(0, 0, 0))
             }
             "logo" -> {
 

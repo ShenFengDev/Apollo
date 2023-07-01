@@ -73,7 +73,7 @@ open class Module() : MinecraftInstance(), Listenable {
                     1 -> {
                         mc.soundHandler.playSound("random.click", 1F)
                     }
-                    2 -> (if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay()
+                    2 -> mc.soundHandler.playSound("random.click", 1F)//(if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay()
                 }
 
                 LiquidBounce.hud.addNotification(Notification("Notification","${if (value) "Enabled "

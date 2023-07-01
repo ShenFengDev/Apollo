@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import co.uk.hexeption.utils.C08PacketPlayerBlockPlacement
 import me.utils.PacketUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.enums.WEnumHand
@@ -116,23 +117,23 @@ class NoSlow : Module() {
 
         when(modeValue.get().toLowerCase()){
             "bedwars"->{
-                if((event.eventState == EventState.PRE && mc.thePlayer!!.itemInUse != null && mc.thePlayer!!.itemInUse!!.item != null) && !mc.thePlayer!!.isBlocking && classProvider.isItemFood(mc.thePlayer!!.heldItem!!.item) || classProvider.isItemPotion(mc.thePlayer!!.heldItem!!.item)){
-                    if(mc.thePlayer!!.isUsingItem && mc.thePlayer!!.itemInUseCount >= 0){
-                        //mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem+1)%9))
-                        //mc2.connection!!.sendPacket(CPacketHeldItemChange(mc2.player.inventory.currentItem))
-                        val curSlot = mc2.player!!.inventory.currentItem
-                        val spoof = if (curSlot == 0) 1 else -1
-                        mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem+spoof)%9))
-                        mc2.connection!!.sendPacket(CPacketHeldItemChange(curSlot))
-                    }
-                }
-                if (event.eventState == EventState.PRE && classProvider.isItemSword(mc.thePlayer!!.heldItem!!.item) && (LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura).blockingStatus || mc.gameSettings.keyBindUseItem.isKeyDown) {
-                    val curSlot = mc2.player!!.inventory.currentItem
-                    val spoof = if (curSlot == 0) 1 else -1
-                    mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem+spoof)%9))
-                    mc2.connection!!.sendPacket(CPacketHeldItemChange(curSlot))
+                val item = mc.thePlayer!!.heldItem?.item
 
+                if (classProvider.isItemBlock(item)) return
+
+                if (event.eventState == EventState.PRE && classProvider.isItemFood(item) || classProvider.isItemPotion(item) || classProvider.isItemBucketMilk(item)) {
+                    val curSlot = mc.thePlayer!!.inventory.currentItem
+                    val spoof = if (curSlot == 0) 1 else -1
+                    PacketUtils.sendPacketNoEvent(CPacketHeldItemChange(curSlot + spoof))
+                    PacketUtils.sendPacketNoEvent(CPacketHeldItemChange(curSlot))
                 }
+                mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerBlockPlacement(mc.thePlayer!!.inventory.getCurrentItemInHand()))
+                mc2.connection!!.sendPacket(
+                    C08PacketPlayerBlockPlacement(
+                        getHytBlockpos(), 255,
+                        EnumHand.MAIN_HAND, 0f, 0f, 0f
+                    )
+                )
             }
             "tiankeng"->{
                 mc.thePlayer!!.motionX=mc.thePlayer!!.motionX

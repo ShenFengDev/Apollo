@@ -106,7 +106,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
             var pct=(nowTime-animeYTime)/animeTime.toDouble()
             if(pct>1){
                 nowY=realY
-                pct=2.0
+                pct=1.0
             }else{
                 pct= EaseUtils.easeOutQuart(pct)
             }

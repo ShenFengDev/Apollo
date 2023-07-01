@@ -37,6 +37,9 @@ class ScaffoldHelper : Module() {
         if(!scaffold.state){
             RotationUtils.setTargetRotation(Rotation(mc.thePlayer!!.rotationYaw,16f))
         }
+
+
+
     }
 
     override fun onDisable() {

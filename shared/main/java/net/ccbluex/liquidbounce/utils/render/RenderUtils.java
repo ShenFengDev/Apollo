@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.api.minecraft.client.render.ITessellator;
 import net.ccbluex.liquidbounce.api.minecraft.client.render.IWorldRenderer;
 import net.ccbluex.liquidbounce.api.minecraft.renderer.entity.IRenderManager;
 import net.ccbluex.liquidbounce.api.minecraft.util.*;
+import net.ccbluex.liquidbounce.features.module.modules.color.Gident;
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer;
 import net.ccbluex.liquidbounce.injection.backend.Backend;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -92,6 +93,103 @@ public final class RenderUtils extends MinecraftInstance {
         quickDrawRect(-7.3F, -20.3F, -4F, -20F);
 
         glEndList();
+    }
+    /*public static void drawGidentOutlinedRoundedRect(double x, double y, double width, double height, double radius, float linewidth) {
+        final Gident colorMixer = (Gident)LiquidBounce.moduleManager.getModule(Gident.class);
+        //大神渐变方向
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        double x1 = x + width;
+        double y1 = y + height;
+        int colorI = 0;
+        GL11.glPushAttrib(0);
+        GL11.glScaled(0.5, 0.5, 0.5);
+
+        x *= 2;
+        y *= 2;
+        x1 *= 2;
+        y1 *= 2;
+        GL11.glLineWidth(linewidth);
+
+        glDisable(GL11.GL_TEXTURE_2D);
+        glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glBegin(2);
+
+        //one
+        for (int i = 0; i <= 90; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x + radius + +(Math.sin((i * Math.PI / 180)) * (radius * -1)), y + radius + (Math.cos((i * Math.PI / 180)) * (radius * -1)));
+            colorI++;
+        }
+        for (int i = 0; i <= y; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x,y1 - radius -i);
+            colorI++;
+        }
+        //two
+        for (int i = 90; i <= 180; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x + radius + (Math.sin((i * Math.PI / 180)) * (radius * -1)), y1 - radius + (Math.cos((i * Math.PI / 180)) * (radius * -1)));
+            colorI++;
+        }
+        for (int i = 90; i <= 180; i += 3) {
+
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x + radius + i,y1);
+            colorI++;
+        }
+        //three
+        for (int i = 0; i <= 90; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x1 - radius + (Math.sin((i * Math.PI / 180)) * radius), y1 - radius + (Math.cos((i * Math.PI / 180)) * radius));
+            colorI++;
+        }
+        for (int i = 0; i <= 90; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(Gident.redValue.get(), Gident.greenValue.get(), Gident.blueValue.get()).getRGB(),new Color(Gident.redValue2.get(), Gident.greenValue2.get(), Gident.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x1,y1 - radius - i);
+            colorI++;
+        }
+        //four
+        for (int i = 90; i <= 180; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(colorMixer.redValue.get(),colorMixer.greenValue.get(),colorMixer.blueValue.get()).getRGB(),new Color(colorMixer.redValue2.get(),colorMixer.greenValue2.get(),colorMixer.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x1 - radius + (Math.sin((i * Math.PI / 180)) * radius), y + radius + (Math.cos((i * Math.PI / 180)) * radius));
+            colorI++;
+        }
+        //第四个结束继续
+        for (int i = 90; i <= 180; i += 3) {
+            RenderUtils.setColor(fadeBetween(new Color(colorMixer.redValue.get(),colorMixer.greenValue.get(),colorMixer.blueValue.get()).getRGB(),new Color(colorMixer.redValue2.get(),colorMixer.greenValue2.get(),colorMixer.blueValue2.get()).getRGB(),20L * colorI));
+            GL11.glVertex2d(x1 - radius - i,y);
+            colorI++;
+        }
+
+        GL11.glEnd();
+
+        glEnable(GL11.GL_TEXTURE_2D);
+        glDisable(GL11.GL_LINE_SMOOTH);
+        glEnable(GL11.GL_TEXTURE_2D);
+
+        GL11.glScaled(2, 2, 2);
+
+        GL11.glPopAttrib();
+        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+
+    }
+
+     */
+
+
+
+
+
+    public static void setColor(int colorHex) {
+        float alpha = (float) (colorHex >> 24 & 255) / 255.0F;
+        float red = (float) (colorHex >> 16 & 255) / 255.0F;
+        float green = (float) (colorHex >> 8 & 255) / 255.0F;
+        float blue = (float) (colorHex & 255) / 255.0F;
+        GL11.glColor4f(red, green, blue, alpha);
     }
     public static void drawOutlinedRoundedRect(double x, double y, double width, double height, double radius, float linewidth, int color) {
         GlStateManager.enableBlend();
@@ -373,12 +471,12 @@ public final class RenderUtils extends MinecraftInstance {
 
         glEnd();
     }
-    public static void drawOutlinedRect(float x, float y, float width, float height, int lineSize, Color lineColor, Color backgroundColor) {
+    public static void drawOutlinedRect(float x, float y, float width, float height, double lineSize, Color lineColor, Color backgroundColor) {
         drawRect(x, y, width, height, backgroundColor.getRGB());
-        drawRect(x, y, width, y + lineSize, lineColor.getRGB());
-        drawRect(x, height - lineSize, width, height, lineColor.getRGB());
-        drawRect(x, y + lineSize, x + lineSize, height - lineSize, lineColor.getRGB());
-        drawRect(width - lineSize, y + lineSize, width, height - lineSize, lineColor.getRGB());
+        drawRect(x, y, width, (float) (y + lineSize), lineColor.getRGB());
+        drawRect(x, (float) (height - lineSize), width, height, lineColor.getRGB());
+        drawRect(x, (float) (y + lineSize), (float) (x + lineSize), (float) (height - lineSize), lineColor.getRGB());
+        drawRect((float) (width - lineSize), (float) (y + lineSize), width, (float) (height - lineSize), lineColor.getRGB());
     }
     public static void newDrawRect(float left, float top, float right, float bottom, int color)
     {

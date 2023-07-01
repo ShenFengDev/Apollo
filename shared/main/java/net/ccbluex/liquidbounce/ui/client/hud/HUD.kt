@@ -27,8 +27,6 @@ open class HUD : MinecraftInstance() {
             Text2::class.java,
             KeyStrokes::class.java,
             PlayerList::class.java,
-//                Arraylist::class.java,
-            Hotbar::class.java,
             Arraylist::class.java,
                 Effects::class.java,
                 Image::class.java,
@@ -42,7 +40,6 @@ open class HUD : MinecraftInstance() {
                 Radar::class.java,
             GameInfo2::class.java,
             KeyBinds2::class.java,
-            VAPEArraylist::class.java,
             KeyBinds::class.java,
             BanChecker::class.java,
                 SpeedGraph::class.java

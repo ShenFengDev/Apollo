@@ -700,7 +700,7 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
 
         // Health bar
         RenderUtils.drawRect(0F, 34F, (getHealth(target) / target.maxHealth) * width,
-            36F, Color(252, 96, 66).rgb)
+            36F, ColorUtils.ALLColor(200).rgb)
 
         // Heal animation
         if (easingHealth < getHealth(target))
@@ -708,15 +708,15 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
                 (getHealth(target) / target.maxHealth) * width, 36F, Color(44, 201, 144).rgb)
 
 
-        target.name.let { FontLoaders.F40.drawString(it!!, 36, 3, 0xffffff) }
-        Fonts.font35.drawString("Distance: ${decimalFormat.format(mc.thePlayer!!.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
+        target.name.let { FontLoaders.F18.drawString(it!!, 36, 3, Color.WHITE.rgb) }
+        fontValue.get().drawString("Distance: ${decimalFormat.format(mc.thePlayer!!.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
 
         // Draw info
         RenderUtils.drawHead(mc.netHandler.getPlayerInfo(target.uniqueID)!!.locationSkin, 2, 2, 30, 30)
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
         if (playerInfo != null) {
-            Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
-                36, 24, Color(0,0,0,bgAlphaValue.get()).rgb)
+            fontValue.get().drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+                36, 24, 0xffffff)
         }
     }
 
@@ -1082,7 +1082,7 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
             "astolfo" -> Border(0F,0F,140F,60F)
             "liquid" -> Border(0F,0F
                 ,(38 + Fonts.font40.getStringWidth(mc.thePlayer!!.name!!).coerceAtLeast(118).toFloat()),36F)
-            "flux" -> Border(0F,0F,(38 +Fonts.font40.getStringWidth(mc.thePlayer!!.name!!))
+            "flux" -> Border(0F,0F,(38 )
                 .coerceAtLeast(70)
                 .toFloat(),34F)
             "rise" -> Border(0F,0F,150F,55F)
