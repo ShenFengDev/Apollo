@@ -49,8 +49,11 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
         for(notify in notifications){
             LiquidBounce.hud.notifications.remove(notify)
         }
-        if (!LiquidBounce.hud.notifications.contains(exampleNotification))
-            //LiquidBounce.hud.addNotification(exampleNotification)
+        if(classProvider.isGuiHudDesigner(mc.currentScreen)){
+            if (!LiquidBounce.hud.notifications.contains(exampleNotification))
+                LiquidBounce.hud.addNotification(exampleNotification)
+        }
+
         if (mc.currentScreen is IGuiScreen) {
 
 
@@ -63,7 +66,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
 
         return null
     }
-    fun drawBoarderBlur(blurRadius: Float) {}
+
 
 }
 
