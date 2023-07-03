@@ -72,7 +72,7 @@ class GrimVelocity:Module() {
             }
         }
 
-        /*        if (classProvider.isSPacketPlayerPosLook(event.packet) && canCancel) {
+                if (classProvider.isSPacketPlayerPosLook(event.packet) && canCancel) {
                     val packet = event.packet.asSPacketPosLook()
                     event.cancelEvent()
                     mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerLook(packet.yaw,packet.pitch,mc.thePlayer!!.onGround))
@@ -90,6 +90,6 @@ class GrimVelocity:Module() {
                             true
                         )
                     )
-                }*/
+                }
     }
 }

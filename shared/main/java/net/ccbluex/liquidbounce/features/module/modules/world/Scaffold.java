@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.api.enums.BlockType;
 import net.ccbluex.liquidbounce.api.enums.EnumFacingType;
@@ -42,11 +43,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.Objects;
 
 @ModuleInfo(
         name = "Scaffold",
-        description = "TRY",
+        description = "修复版",
         category = ModuleCategory.WORLD,
         keyBind = Keyboard.KEY_G
 )
@@ -112,7 +112,9 @@ public class Scaffold extends Module {
     private final FloatValue staticYawOffsetValue = new FloatValue("StaticYawOffset", 0F, 0F, 90F);
 
 
-
+    // Other
+    private final FloatValue xzRangeValue = new FloatValue("xzRange", 0.8F, 0.1F, 1.0F);
+    private final FloatValue yRangeValue = new FloatValue("yRange", 0.8F, 0.1F, 1.0F);
 
     ScaledResolution scaledResolution = new ScaledResolution(mc2);
     float nowY = scaledResolution.getScaledHeight() - 90 + 35;
@@ -186,6 +188,7 @@ public class Scaffold extends Module {
 
     // Visuals
     private final BoolValue counterDisplayValue = new BoolValue("Counter", true);
+    //public static final ListValue blockCounter = new ListValue("blockCounter", new String[]{"MC","Sigma","Rise","Novoline"}, "Rise");
 
     private final BoolValue markValue = new BoolValue("Mark", false);
 
@@ -247,7 +250,9 @@ public class Scaffold extends Module {
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
 
-
+        //if(getBlocksAmount() == 0){
+      //      this.toggle();
+       // }
         getBestBlocks();
         mc.getTimer().setTimerSpeed(timerValue.get());
 
@@ -419,10 +424,13 @@ public class Scaffold extends Module {
 
         }
         //Auto Jump thingy
-        if (shouldGoDown) launchY = (int) mc.getThePlayer().getPosY() - 1;
-        else if (!sameYValue.get()) {
-            mc.getThePlayer().jump();
+        if(getBlocksAmount() != 0){
+            if (shouldGoDown) launchY = (int) mc.getThePlayer().getPosY() - 1;
+            else if (!sameYValue.get()) {
+                mc.getThePlayer().jump();
+            }
         }
+
     }
 
     @EventTarget
@@ -458,14 +466,8 @@ public class Scaffold extends Module {
             setRotation(lockRotation);
 
 
-        if ((facesBlock || rotationModeValue.get().equalsIgnoreCase("Off"))){
-            // && placeModeValue.get().equalsIgnoreCase(eventState.getStateName()
-            if(placeModeValue.get().equalsIgnoreCase(eventState.getStateName())){
-                place();
-            }
-
-        }
-
+        if ((facesBlock || rotationModeValue.get().equalsIgnoreCase("Off")) && placeModeValue.get().equalsIgnoreCase(eventState.getStateName()))
+            place();
 
         // Update and search for new block
         if (eventState == EventState.PRE)
@@ -501,6 +503,11 @@ public class Scaffold extends Module {
      * Search for new target block
      */
     private void findBlock(final boolean expand) {
+        /*final WBlockPos blockPosition = shouldGoDown ? (mc.getThePlayer().getPosY() == (int) mc.getThePlayer().getPosY() + 0.5D ?
+                new WBlockPos(mc.getThePlayer().getPosX(), mc.getThePlayer().getPosY() - 0.6D, mc.getThePlayer().getPosZ())
+                : new WBlockPos(mc.getThePlayer().getPosX(), mc.getThePlayer().getPosY() - 0.6, mc.getThePlayer().getPosZ()).down()) :
+                (mc.getThePlayer().getPosY() == (int) mc.getThePlayer().getPosY() + 0.5D ? new WBlockPos(mc.getThePlayer())
+                        : new WBlockPos(mc.getThePlayer().getPosX(), mc.getThePlayer().getPosY(), mc.getThePlayer().getPosZ()).down());*/
 
         final WBlockPos blockPosition = shouldGoDown ? (mc.getThePlayer().getPosY() == (int) mc.getThePlayer().getPosY() + 0.5D ? new WBlockPos(mc.getThePlayer().getPosX(), mc.getThePlayer().getPosY() - 0.6D, mc.getThePlayer().getPosZ())
                 : new WBlockPos(mc.getThePlayer().getPosX(), mc.getThePlayer().getPosY() - 0.6, mc.getThePlayer().getPosZ()).down()) :
@@ -523,13 +530,11 @@ public class Scaffold extends Module {
                     return;
             }
         } else if (searchValue.get()) {
-            for (int x = -1; x <= 1; x++) {
+            for (int x = -1; x <= 1; x++)
                 for (int z = -1; z <= 1; z++)
-                    if (search(blockPosition.add(x, 0, z), !shouldGoDown)){
+                    if (search(blockPosition.add(x, 0, z), !shouldGoDown))
                         return;
-                    }
-            }
-            }
+        }
     }
 
     /**
@@ -560,7 +565,7 @@ public class Scaffold extends Module {
 
             if(autoBlockValue.get().equalsIgnoreCase("Pick"))
                 mc.getNetHandler().addToSendQueue(classProvider.createCPacketHeldItemChange(blockSlot - 36));
-                mc.getPlayerController().updateController();
+            mc.getPlayerController().updateController();
 
 
             if (autoBlockValue.get().equalsIgnoreCase("Spoof")) {
@@ -636,13 +641,10 @@ public class Scaffold extends Module {
         if (slot != mc.getThePlayer().getInventory().getCurrentItem()){
             mc.getNetHandler().addToSendQueue(classProvider.createCPacketHeldItemChange(mc.getThePlayer().getInventory().getCurrentItem()));
         }
-
         if (lastslot != mc.getThePlayer().getInventory().getCurrentItem() && autoBlockValue.get().equalsIgnoreCase("switch")) {
-
             mc.getThePlayer().getInventory().setCurrentItem(lastslot);
             mc.getPlayerController().updateController();
         }
-
     }
 
     /**
@@ -670,42 +672,47 @@ public class Scaffold extends Module {
 
         final ScaledResolution sr = new ScaledResolution(mc2);
         final ItemStack itemStack = mc2.player.inventory.getStackInSlot(slot);
+        Color color;
 
+        if (getBlocksAmount() <= 63) {
+            color = Color.RED;
+        } else color = Color.GREEN;
 
         final String info = getBlocksAmount() + " blocks";
+        int infoWidth = Fonts.minecraftFont.getStringWidth(info);
 
 
-        if (counterDisplayValue.get()) {
             final int height = sr.getScaledHeight() / 2;
 
-            mc.getFontRendererObj().drawStringWithShadow(String.valueOf(getBlocksAmount()), (int) (sr.getScaledWidth() / 2F + 1F), height + 9, new Color(255,255,255,255).getRGB());
+            if(counterDisplayValue.get()){
+                mc.getFontRendererObj().drawStringWithShadow(String.valueOf(getBlocksAmount()), (int) (sr.getScaledWidth() / 2F + 1F), height + 9, color.getRGB());
 
-            if (itemStack != null) {
-                //GlStateManager.pushMatrix();
-                GlStateManager.enableRescaleNormal();
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                RenderHelper.enableGUIStandardItemLighting();
-                mc2.getRenderItem().renderItemAndEffectIntoGUI(itemStack, (int) (sr.getScaledWidth() / 2F - 17F), height + 4);
-                GlStateManager.disableRescaleNormal();
-                GlStateManager.disableBlend();
-                RenderHelper.disableStandardItemLighting();
-                //GlStateManager.popMatrix();
-            } else
-                Fonts.minecraftFont.drawCenteredString("?", sr.getScaledWidth() / 2F + 0.5F, height + 6, new Color(255,255,255,255).getRGB());
+                if (itemStack != null) {
+                    GlStateManager.pushMatrix();
+                    GlStateManager.enableRescaleNormal();
+                    GlStateManager.enableBlend();
+                    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                    RenderHelper.enableGUIStandardItemLighting();
+                    mc2.getRenderItem().renderItemAndEffectIntoGUI(itemStack, (int) (sr.getScaledWidth() / 2F - 17F), height + 4);
+                    GlStateManager.disableRescaleNormal();
+                    GlStateManager.disableBlend();
+                    RenderHelper.disableStandardItemLighting();
+                    GlStateManager.popMatrix();
+                } else {
+                    Fonts.minecraftFont.drawCenteredString("?", sr.getScaledWidth() / 2F + 0.5F, height + 6, -1);
+                }
+            }
 
-        }
 
 
-            GlStateManager.resetColor();
-            //GL11.glPopMatrix();
-        }
 
+    }
 
 
     /**
      * Scaffold visuals
      *
+     * @param event
      */
     @EventTarget
     public void onRender3D(final Render3DEvent event) {
@@ -717,8 +724,7 @@ public class Scaffold extends Module {
             final PlaceInfo placeInfo = PlaceInfo.get(blockPos);
 
             if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
-                RenderUtils.drawOutlineBlockBox(blockPos, new Color(255, 255, 255, 255), true);
-
+                RenderUtils.drawBlockBox(blockPos, new Color(68, 117, 255, 100), false);
                 break;
             }
         }
@@ -741,8 +747,11 @@ public class Scaffold extends Module {
         final float staticPitch = staticPitchValue.get();
         final float staticYawOffset = staticYawOffsetValue.get();
 
-
-
+        // SearchRanges
+        final double xzRV = xzRangeValue.get();
+        final double xzSSV = calcStepSize(xzRV);
+        final double yRV = yRangeValue.get();
+        final double ySSV = calcStepSize(yRV);
 
         double xSearchFace = 0;
         double ySearchFace = 0;
@@ -762,14 +771,14 @@ public class Scaffold extends Module {
 
             final WVec3 dirVec = new WVec3(side.getDirectionVec());
 
-            for (double xSearch = 0.1D; xSearch < 0.9D; xSearch += 0.1D) {
-                for (double ySearch = 0.1D; ySearch < 0.9D; ySearch += 0.1D) {
-                    for (double zSearch = 0.1D; zSearch < 0.9D; zSearch += 0.1D) {
+            for (double xSearch = 0.5D - (xzRV / 2); xSearch <= 0.5D + (xzRV / 2); xSearch += xzSSV) {
+                for (double ySearch = 0.5D - (yRV / 2); ySearch <= 0.5D + (yRV / 2); ySearch += ySSV) {
+                    for (double zSearch = 0.5D - (xzRV / 2); zSearch <= 0.5D + (xzRV / 2); zSearch += xzSSV) {
                         final WVec3 posVec = new WVec3(blockPosition).addVector(xSearch, ySearch, zSearch);
                         final double distanceSqPosVec = eyesPos.squareDistanceTo(posVec);
                         final WVec3 hitVec = posVec.add(new WVec3(dirVec.getXCoord() * 0.5, dirVec.getYCoord() * 0.5, dirVec.getZCoord() * 0.5));
 
-                        if (checks && (eyesPos.squareDistanceTo(hitVec) > 180 || distanceSqPosVec > eyesPos.squareDistanceTo(posVec.add(dirVec)) || mc.getTheWorld().rayTraceBlocks(eyesPos, hitVec, false, true, false) != null))
+                        if (checks && (eyesPos.squareDistanceTo(hitVec) > 18D || distanceSqPosVec > eyesPos.squareDistanceTo(posVec.add(dirVec)) || mc.getTheWorld().rayTraceBlocks(eyesPos, hitVec, false, true, false) != null))
                             continue;
 
                         // face block
@@ -782,14 +791,14 @@ public class Scaffold extends Module {
 
                             final float pitch = staticPitchMode ? staticPitch : WMathHelper.wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)));
                             final Rotation rotation = new Rotation(
-                                    WMathHelper.wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 89F +
+                                    WMathHelper.wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F +
                                             (staticYawMode ? staticYawOffset : 0)), pitch);
 
                             final WVec3 rotationVector = RotationUtils.getVectorForRotation(rotation);
                             final WVec3 vector = eyesPos.addVector(rotationVector.getXCoord() * 4, rotationVector.getYCoord() * 4, rotationVector.getZCoord() * 4);
-                            final IMovingObjectPosition obj = Objects.requireNonNull(mc.getTheWorld()).rayTraceBlocks(eyesPos, vector, false, false, true);
+                            final IMovingObjectPosition obj = mc.getTheWorld().rayTraceBlocks(eyesPos, vector, false, false, true);
 
-                            if (obj != null && (obj.getTypeOfHit() != IMovingObjectPosition.WMovingObjectType.BLOCK || !obj.getBlockPos().equals(neighbor)))
+                            if (obj.getTypeOfHit() != IMovingObjectPosition.WMovingObjectType.BLOCK || !obj.getBlockPos().equals(neighbor))
                                 continue;
 
                             if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(placeRotation.getRotation())) {
@@ -833,7 +842,7 @@ public class Scaffold extends Module {
                     final WVec3 vector = eyesPos.addVector(rotationVector.getXCoord() * 4, rotationVector.getYCoord() * 4, rotationVector.getZCoord() * 4);
                     final IMovingObjectPosition obj = mc.getTheWorld().rayTraceBlocks(eyesPos, vector, false, false, true);
 
-                    if (obj != null && !(obj.getTypeOfHit() == IMovingObjectPosition.WMovingObjectType.BLOCK && Objects.equals(obj.getBlockPos(), neighbor)))
+                    if (!(obj.getTypeOfHit() == IMovingObjectPosition.WMovingObjectType.BLOCK && obj.getBlockPos().equals(neighbor)))
                         continue;
                     facesBlock = true;
                     break;

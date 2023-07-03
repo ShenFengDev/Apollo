@@ -47,8 +47,8 @@ class Velocity : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("GrimReduce","NewGrimAC","Jump"), "GrimReduce")
-    val canSendSize = IntegerValue("CanSendProbabilityBoundary",3,0,10)
+    private val modeValue = ListValue("Mode", arrayOf("GrimReduce","NewGrimAC","Jump","Grim"), "GrimReduce")
+
 
     // AAC Push
 
@@ -90,6 +90,27 @@ class Velocity : Module() {
         if ((noFireValue.get() && mc.thePlayer!!.burning)||(hytGround.get()&&!mc.thePlayer!!.onGround)) return
 
         when (modeValue.get().toLowerCase()) {
+            "grim"->{
+                if(mc.thePlayer!!.hurtTime > 8){
+                    mc.thePlayer!!.sendQueue.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!.asEntityPlayer(),ICPacketEntityAction.WAction.START_SPRINTING))
+                    mc.thePlayer!!.sendQueue.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!.asEntityPlayer(),ICPacketEntityAction.WAction.STOP_SPRINTING))
+                    mc.thePlayer!!.sendQueue.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!.asEntityPlayer(),ICPacketEntityAction.WAction.START_SPRINTING))
+
+                }
+                if (thePlayer.hurtTime > 0 && thePlayer.onGround) {
+                    thePlayer.motionY = 0.42
+
+                    val yaw = thePlayer.rotationYaw * 0.017453292F
+
+                    thePlayer.motionX -= sin(yaw) * 0.1845141919810
+                    thePlayer.motionZ += cos(yaw) * 0.1845141919810
+                    if(debugValue.get()&&mc.thePlayer!!.hurtTime>=9){
+                        ClientUtils.displayChatMessage("reduce"+(-mc.thePlayer!!.motionX))
+                    }
+                }
+            }
+
+
             "grimreduce"->{
                 if (thePlayer.hurtTime > 0) {
                     thePlayer.motionX += -1.0E-7
