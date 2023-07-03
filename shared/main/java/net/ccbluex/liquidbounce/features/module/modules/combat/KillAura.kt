@@ -27,8 +27,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.color.Gident
 import net.ccbluex.liquidbounce.features.module.modules.color.Rainbow
+import net.ccbluex.liquidbounce.features.module.modules.exploit.NoC03
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.injection.backend.Backend
@@ -125,7 +127,7 @@ class KillAura : Module() {
     val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
     private val BlockRangeValue = FloatValue("BlockRange", 3f, 0f, 8f)
 
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("Vanilla", "Test", "Fake", "HuaYuTing","C08","OldC08", "GameSettings", "UseItem"),"Simple")
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("Vanilla", "Hyt", "Fake", "HuaYuTing","C08","OldC08", "GameSettings", "UseItem"),"Simple")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val delayedBlockValue = BoolValue("AutoBlock-AfterTck", false)
     private val afterAttackValue = BoolValue("AutoBlock-AfterAttack", false)
@@ -395,7 +397,7 @@ class KillAura : Module() {
     }
     @EventTarget
     fun onMove(event: MoveEvent){
-        if(KaFix.get()){
+        if(KaFix.get() && LiquidBounce.moduleManager.getModule(NoC03::class.java).state){
 
                 if (mc.thePlayer!!.onGround){
 
@@ -421,7 +423,9 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-
+        if(LiquidBounce.moduleManager.getModule(NoC03::class.java).state){
+            rangeValue.set(5)
+        }
         if (lightingValue.get()) {
             when (lightingModeValue.get().toLowerCase()) {
                 "dead" -> {
@@ -1359,13 +1363,11 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(classProvider.createCPacketUseEntity(interactEntity, ICPacketUseEntity.WAction.INTERACT))
         }
         when(autoBlockPacketValue.get()){
-            "Test"->{
-                val itemstack = mc.thePlayer!!.inventory.getCurrentItemInHand()
-                val packet2 =  classProvider.createCPacketPlayerBlockPlacement(itemstack) as Packet<*>
-                val enumhand = WEnumHand.MAIN_HAND
-                val ipacket = classProvider.createCPacketTryUseItem(enumhand) as Packet<*>
-                mc2.connection!!.sendPacket(ipacket)
-                mc2.connection!!.sendPacket(packet2)
+            "Hyt"->{
+                if(mc.thePlayer!!.heldItem != null && mc.thePlayer!!.heldItem!!.item is ItemSword){
+                    mc.gameSettings.keyBindUseItem.pressed = (LiquidBounce.moduleManager.getModule(NoSlow::class.java) as NoSlow).runblock
+                }
+
             }
 
             "HuaYuTing" ->{

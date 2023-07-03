@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import me.utils.PacketUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.minecraft.client.entity.player.IEntityOtherPlayerMP
 import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
@@ -17,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketConfirmTransaction
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -66,7 +68,16 @@ class Blink : Module() {
             return
 
         blink()
-
+        PacketUtils.sendPacketNoEvent(
+            CPacketPlayer.PositionRotation(
+                mc.thePlayer!!.posX,
+                mc.thePlayer!!.posY,
+                mc.thePlayer!!.posZ,
+                mc.thePlayer!!.rotationYaw,
+                mc.thePlayer!!.rotationPitch,
+                mc.thePlayer!!.onGround
+            )
+        )
 
 
 
@@ -98,7 +109,7 @@ class Blink : Module() {
 
          */
 
-            if(tick2 == 25){
+            if(tick2 == 20){
                 blink()
                 tick2 = 0
             }
@@ -107,7 +118,7 @@ class Blink : Module() {
 
 
 
-        if(hytValue.get()&& classProvider.isCPacketConfirmTransaction(packet) && classProvider.isCPacketKeepAlive(packet)){
+        if(hytValue.get()&& classProvider.isCPacketConfirmTransaction(packet)){
 
             event.cancelEvent()
             packets.add(packet)

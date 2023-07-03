@@ -163,6 +163,11 @@ class Velocity : Module() {
 
 
     }
+    @EventTarget
+    fun onPacket(event:PacketEvent){
+        val packet = event.packet
+
+    }
 
     }
 

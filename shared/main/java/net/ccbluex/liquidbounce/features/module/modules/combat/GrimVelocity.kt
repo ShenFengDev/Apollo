@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
@@ -17,26 +18,23 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "GrimVelocity",description = "Build By Robin",category = ModuleCategory.COMBAT)
 class GrimVelocity:Module() {
-    var canCancel = false
+
     val onlyGround = BoolValue("OnlyGround",true)
     val onlyHurt = BoolValue("OnlyHurt",false)
 
-    override fun onEnable() {
-        canCancel = false
-    }
+    var canCancel = false
+
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+
         val player = mc.thePlayer!!
         val packet = event.packet
         val packetEntityVelocity = packet.asSPacketEntityVelocity()
-        if ((onlyGround.get() && !mc2.player.onGround) || (onlyHurt.get() && mc2.player.hurtTime == 0) || mc2.player.isDead || mc2.player.isInWater)
+        if ((onlyGround.get() && !mc2.player.onGround) || (onlyHurt.get() && mc2.player.hurtTime == 0) || mc2.player.isDead || mc2.player.isInWater) {
             return
-
-        if (classProvider.isSPacketEntityVelocity(packet)) {
-            if (mc2.world.getEntityByID(packetEntityVelocity.entityID) != mc.thePlayer)
-                return
-
+        }
+        if (classProvider.isSPacketEntityVelocity(packet)&&mc.theWorld!!.getEntityByID(packetEntityVelocity.entityID) == mc.thePlayer) {
             event.cancelEvent()
             packetEntityVelocity.motionX = 0
             packetEntityVelocity.motionY = 0
@@ -72,10 +70,10 @@ class GrimVelocity:Module() {
             }
         }
 
-                if (classProvider.isSPacketPlayerPosLook(event.packet) && canCancel) {
-                    val packet = event.packet.asSPacketPosLook()
+                if (classProvider.isSPacketPlayerPosLook(packet) && canCancel) {
+                    val packet2 = event.packet.asSPacketPosLook()
                     event.cancelEvent()
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerLook(packet.yaw,packet.pitch,mc.thePlayer!!.onGround))
+                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerLook(packet2.yaw,packet2.pitch,mc.thePlayer!!.onGround))
                     canCancel = false
                 }
                 if (canCancel && packet is SPacketPlayerPosLook) {
@@ -87,9 +85,12 @@ class GrimVelocity:Module() {
                             packet.z,
                             packet.getYaw(),
                             packet.getPitch(),
-                            true
+                            mc.thePlayer!!.onGround
                         )
                     )
                 }
+    }
+    override fun onEnable() {
+        canCancel = false
     }
 }

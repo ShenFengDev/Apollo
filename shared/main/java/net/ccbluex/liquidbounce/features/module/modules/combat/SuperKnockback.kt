@@ -42,9 +42,13 @@ class SuperKnockback : Module() {
                     }
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    theplayer.sprinting = true
-                    theplayer.serverSprintState = true
+                    if(mc.thePlayer!!.sprinting){
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
+                    }else{
+                        return
+                    }
+
+
 
                 }
 

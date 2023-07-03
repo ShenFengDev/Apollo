@@ -68,6 +68,7 @@ class NoSlow : Module() {
     private var nextTemp = false
     private var waitC03 = false
     private var lastBlockingStat = false
+    var runblock = false
 
     private val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
 
@@ -125,8 +126,13 @@ class NoSlow : Module() {
                     }
                 }
                 if (event.eventState == EventState.PRE && classProvider.isItemSword(mc.thePlayer!!.heldItem!!.item)) {
+
                     mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem+1)%9))
+                    runblock= false
                     mc2.connection!!.sendPacket(CPacketHeldItemChange(mc2.player.inventory.currentItem))
+                    runblock=true
+
+
                 }
             }
             "tiankeng"->{
