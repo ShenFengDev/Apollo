@@ -114,8 +114,9 @@ class NoSlow : Module() {
             return
         }
 
-
+        if (classProvider.isItemBlock(mc.thePlayer!!.heldItem)) return
         when(modeValue.get().toLowerCase()){
+
             "bedwars"->{
                 if((event.eventState == EventState.PRE && mc.thePlayer!!.itemInUse != null && mc.thePlayer!!.itemInUse!!.item != null) && !mc.thePlayer!!.isBlocking && classProvider.isItemFood(mc.thePlayer!!.heldItem!!.item) || classProvider.isItemPotion(mc.thePlayer!!.heldItem!!.item)){
                     if(mc.thePlayer!!.isUsingItem && mc.thePlayer!!.itemInUseCount >= 1){
@@ -124,9 +125,8 @@ class NoSlow : Module() {
                     }
                 }
                 if (event.eventState == EventState.PRE && classProvider.isItemSword(mc.thePlayer!!.heldItem!!.item)) {
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM,
-                        WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerBlockPlacement(mc.thePlayer!!.inventory.getCurrentItemInHand() as IItemStack))
+                    mc2.connection!!.sendPacket(CPacketHeldItemChange((mc2.player.inventory.currentItem+1)%9))
+                    mc2.connection!!.sendPacket(CPacketHeldItemChange(mc2.player.inventory.currentItem))
                 }
             }
             "tiankeng"->{
@@ -158,7 +158,7 @@ class NoSlow : Module() {
             "tiankeng"->{
                 val packet = event.packet
 
-                    if(mc.thePlayer!!.itemInUseCount != 0){
+                    if(mc.thePlayer!!.isUsingItem){
                      if(packet is CPacketPlayerTryUseItem || packet is CPacketPlayerTryUseItemOnBlock&& !classProvider.isItemBow(mc.thePlayer!!.heldItem)){
                         event.cancelEvent()
                         packets.add(packet)

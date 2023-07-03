@@ -41,18 +41,19 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "Velocity", description = "Edit your velocity",category = ModuleCategory.COMBAT)
 class Velocity : Module() {
-    //我去 打滑我
+
 
     /**
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("GrimReduce","NewGrimAC","Jump","GrimFull"), "GrimReduce")
+    private val modeValue = ListValue("Mode", arrayOf("GrimReduce","NewGrimAC","Jump"), "GrimReduce")
     val canSendSize = IntegerValue("CanSendProbabilityBoundary",3,0,10)
 
     // AAC Push
 
     public var block: IBlock? = null
+
 
     private val noFireValue = BoolValue("noFire", false)
 
@@ -61,8 +62,7 @@ class Velocity : Module() {
     private val hyMove = BoolValue("HytOnlyMove", false)
 
     private val debugValue = BoolValue("Debug",false)
-    private var canCancel = false
-    private var send = 0
+
 
     /**
      * VALUES
@@ -142,50 +142,7 @@ class Velocity : Module() {
 
 
     }
-    @EventTarget
-    fun onPacket(event : PacketEvent){
-        val packet = event.packet
-        val spacket = event.packet.unwrap()
-        val packetEntityVelocity = packet.asSPacketEntityVelocity()
-        when(modeValue.get()){
-            "GrimFull"->{
-                if ((hytGround.get() && !mc2.player.onGround) || (hyMove.get() && !MovementUtils.isMoving) || mc2.player.isDead || mc2.player.isInWater)
-                    return
 
-                send++
-                if (classProvider.isSPacketEntityVelocity(spacket)) {
-                    event.cancelEvent()
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SNEAKING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SNEAKING))
-                    packetEntityVelocity.motionX = 0
-                    packetEntityVelocity.motionY = 0
-                    packetEntityVelocity.motionZ = 0
-                    canCancel = true
-                }
-                if (spacket is SPacketPlayerPosLook && canCancel) {
-                    val x = spacket.x - mc.thePlayer?.posX!!
-                    val y = spacket.y - mc.thePlayer?.posY!!
-                    val z = spacket.z - mc.thePlayer?.posZ!!
-                    val diff = sqrt(x * x + y * y + z * z)
-                    event.cancelEvent()
-                    if (diff <= 8) {
-                        PacketUtils.sendPacketNoEvent(CPacketPlayer.PositionRotation(spacket.x, spacket.y, spacket.z, spacket.getYaw(), spacket.getPitch(), true))
-                    }
-                    mc.netHandler.addToSendQueue(
-                        classProvider.createCPacketPlayerLook(spacket.yaw,spacket.pitch,mc.thePlayer!!.onGround))
-                    canCancel = false
-                }
-                if ((packet is SPacketConfirmTransaction || packet is CPacketKeepAlive || packet is CPacketClientStatus) && canCancel){
-                    if (send > canSendSize.get()){
-                        send = 0
-                    }else{
-                        event.cancelEvent()
-                    }
-                    canCancel = false
-                }
-            }
-            }
-        }
     }
 
 
