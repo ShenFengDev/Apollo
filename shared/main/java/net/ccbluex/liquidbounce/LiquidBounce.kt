@@ -52,7 +52,7 @@ import javax.imageio.ImageIO
 object LiquidBounce {
 
     // Client information
-     var CLIENT_NAME = "D1ckB0unce"
+     var CLIENT_NAME = "Apollo"
     const val CLIENT_VERSION = 1.0
     const val CLIENT_CREATOR = "LiquidBounce-Team"
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION

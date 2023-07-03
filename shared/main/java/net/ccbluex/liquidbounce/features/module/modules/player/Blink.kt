@@ -87,9 +87,7 @@ class Blink : Module() {
 
         if (mc.thePlayer == null || disableLogger)
             return
-        if(packet.unwrap() is SPacketConfirmTransaction){
-            event.cancelEvent()
-        }
+
         if (classProvider.isCPacketPlayer(packet)) { // Cancel all movement stuff
             event.cancelEvent()
 
@@ -100,16 +98,16 @@ class Blink : Module() {
 
          */
 
-           /* if(tick2 == 20){
+            if(tick2 == 25){
                 blink()
                 tick2 = 0
             }
 
 
-            */
 
 
-        if(hytValue.get()&& classProvider.isCPacketConfirmTransaction(packet)){
+
+        if(hytValue.get()&& classProvider.isCPacketConfirmTransaction(packet) && classProvider.isCPacketKeepAlive(packet)){
 
             event.cancelEvent()
             packets.add(packet)

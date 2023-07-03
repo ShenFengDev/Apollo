@@ -560,7 +560,7 @@ public class Scaffold extends Module {
 
             if(autoBlockValue.get().equalsIgnoreCase("Pick"))
                 mc.getNetHandler().addToSendQueue(classProvider.createCPacketHeldItemChange(blockSlot - 36));
-            mc.getPlayerController().updateController();
+                mc.getPlayerController().updateController();
 
 
             if (autoBlockValue.get().equalsIgnoreCase("Spoof")) {
@@ -636,10 +636,13 @@ public class Scaffold extends Module {
         if (slot != mc.getThePlayer().getInventory().getCurrentItem()){
             mc.getNetHandler().addToSendQueue(classProvider.createCPacketHeldItemChange(mc.getThePlayer().getInventory().getCurrentItem()));
         }
+
         if (lastslot != mc.getThePlayer().getInventory().getCurrentItem() && autoBlockValue.get().equalsIgnoreCase("switch")) {
+
             mc.getThePlayer().getInventory().setCurrentItem(lastslot);
             mc.getPlayerController().updateController();
         }
+
     }
 
     /**
