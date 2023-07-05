@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -37,16 +38,21 @@ class SuperKnockback : Module() {
             when (modeValue.get().toLowerCase()) {
                 "packet" -> {
                     val theplayer = mc.thePlayer ?: return
+
+                    if(!MovementUtils.isMoving){
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                        return
+                    }
+                    if(!mc.thePlayer!!.sprinting){
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
+                    }
                     if (theplayer.sprinting) {
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
                     }
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    if(mc.thePlayer!!.sprinting){
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    }else{
-                        return
-                    }
+
 
 
 

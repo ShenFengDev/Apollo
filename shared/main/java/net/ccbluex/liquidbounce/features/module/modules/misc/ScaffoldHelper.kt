@@ -35,7 +35,7 @@ class ScaffoldHelper : Module() {
 
 
         if(!scaffold.state&&mc.thePlayer!!.onGround){
-            RotationUtils.setTargetRotation(Rotation(mc.thePlayer!!.rotationYaw,18f))
+            RotationUtils.setTargetRotation(Rotation(mc.thePlayer!!.rotationYaw,25f))
         }
 
 

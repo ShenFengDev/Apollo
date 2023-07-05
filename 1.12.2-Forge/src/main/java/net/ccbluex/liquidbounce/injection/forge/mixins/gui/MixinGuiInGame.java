@@ -79,8 +79,8 @@ public abstract class MixinGuiInGame extends MixinGui {
             this.zLevel = -90.0F;
             Color var10000 = me.utils.render.RenderUtils.interpolateColorsBackAndForth(8, 1, new Color(255, 255, 255, 255), new Color(0, 0, 0, 0), false);
             GuiIngame.drawRect(middleScreen - 91  + entityPlayer.inventory.currentItem * 20 + 1+2, sr.getScaledHeight() - 2, middleScreen - 91 - 1 + entityPlayer.inventory.currentItem * 20 + 22, sr.getScaledHeight() - 22 - 1 + 1, var10000.getRGB());
-            //BlurBuffer.blurArea2(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 91, sr.getScaledHeight());
-            GuiIngame.drawRect(middleScreen - 91  + entityPlayer.inventory.currentItem * 20 + 1+2, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + entityPlayer.inventory.currentItem * 20 + 22, sr.getScaledHeight() - 22 - 1 + 1, var10000.getRGB());
+            BlurBuffer.blurArea2(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 91, sr.getScaledHeight());
+            //GuiIngame.drawRect(middleScreen - 91  + entityPlayer.inventory.currentItem * 20 + 1+2, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + entityPlayer.inventory.currentItem * 20 + 22, sr.getScaledHeight() - 22 - 1 + 1, var10000.getRGB());
 
 
             GlStateManager.resetColor();
