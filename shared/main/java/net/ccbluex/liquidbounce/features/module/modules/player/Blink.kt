@@ -68,16 +68,7 @@ class Blink : Module() {
             return
 
         blink()
-        PacketUtils.sendPacketNoEvent(
-            CPacketPlayer.PositionRotation(
-                mc.thePlayer!!.posX,
-                mc.thePlayer!!.posY,
-                mc.thePlayer!!.posZ,
-                mc.thePlayer!!.rotationYaw,
-                mc.thePlayer!!.rotationPitch,
-                mc.thePlayer!!.onGround
-            )
-        )
+
 
 
 
@@ -103,11 +94,7 @@ class Blink : Module() {
             event.cancelEvent()
 
         }
-        /*if(packet is CPacketConfirmTransaction){
-            event.cancelEvent()
-        }
 
-         */
 
             if(tick2 == 20){
                 blink()
