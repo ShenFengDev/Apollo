@@ -112,7 +112,7 @@ class GrimVelocity : Module() {
             cancelPackets = if(mc.thePlayer!!.onGround) cancelPacketValue.get() else AirCancelPacketValue.get()
 
         }
-        if (( ModeValue.get().equals("c0f", ignoreCase = true)||(packet is CPacketClientStatus||packet is SPacketConfirmTransaction && ModeValue.get().equals("s32", ignoreCase = true)) ||(packet is CPacketConfirmTransaction && ModeValue.get().equals("c0f", ignoreCase = true)) )&& cancelPackets > 0){
+        if (( ModeValue.get().equals("c0f", ignoreCase = true)||(packet is SPacketConfirmTransaction && ModeValue.get().equals("s32", ignoreCase = true)) ||(packet is CPacketConfirmTransaction && ModeValue.get().equals("c0f", ignoreCase = true)) )&& cancelPackets > 0){
             if(C0fResend.get()&&ModeValue.get().equals("c0f", ignoreCase = true)){
                 C0fPacket.add(packet)
             }
