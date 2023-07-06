@@ -305,7 +305,7 @@ class KillAura : Module() {
 
 
 
-        if (event.eventState == EventState.PRE) {
+        if (event.eventState == EventState.POST) {
             target ?: return
             currentTarget ?: return
 
@@ -1365,7 +1365,7 @@ class KillAura : Module() {
         when(autoBlockPacketValue.get()){
             "Hyt"->{
                 if(mc.thePlayer!!.heldItem != null && mc.thePlayer!!.heldItem!!.item is ItemSword){
-                    mc.gameSettings.keyBindUseItem.pressed = (LiquidBounce.moduleManager.getModule(NoSlow::class.java) as NoSlow).runblock
+                    mc.gameSettings.keyBindUseItem.pressed = true
                 }
 
             }
@@ -1449,7 +1449,7 @@ class KillAura : Module() {
     private fun stopBlocking() {
         if (blockingStatus) {
             mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
-
+            mc.gameSettings.keyBindUseItem.pressed = false
             if(autoBlockPacketValue.get().equals("Vanilla", true)) {
                 mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN,                         classProvider.getEnumFacing(EnumFacingType.DOWN)))
             }
