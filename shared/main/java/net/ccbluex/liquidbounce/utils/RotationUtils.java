@@ -355,6 +355,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         return vecRotation;
     }
+
     public static Rotation getNewRotations(final WVec3 vec, final boolean predict) {
         final WVec3 eyesPos = new WVec3(mc2.player.posX, mc2.player.getEntityBoundingBox().minY +
                 mc2.player.getEyeHeight(), mc2.player.posZ);
@@ -545,9 +546,9 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         VecRotation vecRotation = null;
 
-        for(double xSearch = 0.15D; xSearch < 0.85D; xSearch += 0.1D) {
-            for (double ySearch = 0.15D; ySearch < 1D; ySearch += 0.1D) {
-                for (double zSearch = 0.15D; zSearch < 0.85D; zSearch += 0.1D) {
+        for(double xSearch = 0.1D; xSearch < 0.9D; xSearch += 0.1D) {
+            for (double ySearch = 0.1D; ySearch < 9D; ySearch += 0.1D) {
+                for (double zSearch = 0.1D; zSearch < 0.9D; zSearch += 0.1D) {
                     final WVec3 vec3 = new WVec3(bb.getMinX() + (bb.getMaxX() - bb.getMinX()) * xSearch,
                             bb.getMinY() + (bb.getMaxY() - bb.getMinY()) * ySearch, bb.getMinZ() + (bb.getMaxZ() - bb.getMinZ()) * zSearch);
                     final Rotation rotation = toRotation(vec3, predict);

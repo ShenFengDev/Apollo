@@ -162,7 +162,7 @@ class KillAura : Module() {
     private val lightingModeValue = ListValue("Lighting-Mode", arrayOf("Dead", "Attack"), "Dead")
     private val lightingSoundValue = BoolValue("Lighting-Sound", true)
     private val randomCenterValue = BoolValue("RandomCenter", true)
-    private val rotations = ListValue("RotationMode", arrayOf("None", "LockView", "BackTrack", "Hyt", "Test2", "HytRotation"), "Hyt")
+    private val rotations = ListValue("RotationMode", arrayOf("None", "LockView", "BackTrack", "Hyt", "LiquidBounce", "HytRotation"), "Hyt")
     private val outborderValue = BoolValue("Outborder", false)
     private val silentRotationValue = BoolValue("SilentRotation", true)
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
@@ -1201,7 +1201,7 @@ class KillAura : Module() {
             return true
         }
 
-        if (rotations.get().equals("test2", ignoreCase = true)){
+        if (rotations.get().equals("LiquidBounce", ignoreCase = true)){
             //用这个test2看看
             if (maxTurnSpeed.get() <= 0F)
                 return true

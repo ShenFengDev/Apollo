@@ -62,7 +62,7 @@ idea {
     }
 }
 
-archivesBaseName = 'D1ckB0unce'
+archivesBaseName = 'Apollo'
 
 minecraft {
     version = "1.12.2-14.23.5.2768"
