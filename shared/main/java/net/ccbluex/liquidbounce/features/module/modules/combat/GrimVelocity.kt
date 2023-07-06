@@ -45,7 +45,7 @@ class GrimVelocity : Module() {
     private var updates = 0
     private var S08 = 0
     private val C0fPacket = LinkedBlockingQueue<Packet<*>>()
-    private val packets = LinkedBlockingQueue<IPacket>()
+    private val packets = LinkedBlockingQueue<Packet<*>>()
     private val S32Packet = LinkedList<Packet<INetHandlerPlayClient>>()
     private val SPacket = LinkedList<Packet<INetHandlerPlayClient>>()
     private val debugValue = BoolValue("debug",false)
@@ -106,11 +106,11 @@ class GrimVelocity : Module() {
                     packet.motionZ = 0
                     event.cancelEvent()
                 }
-            }else{
-                if(cancelS12PacketValue.get()) {
+            }else if(cancelS12PacketValue.get()){
+
 
                     event.cancelEvent()
-                }
+
             }
 
             cancelPackets = if(mc.thePlayer!!.onGround) cancelPacketValue.get() else AirCancelPacketValue.get()
@@ -132,23 +132,23 @@ class GrimVelocity : Module() {
             cancelPackets--
         }
         if(cancelPackets > 0){
-            if(DelayClientPacket.get() && (MovementUtils.isMoving||!OnlyMove.get())){
-               // if(!bl1nk.state) {
-                  //  bl1nk.state = true
-                    if (classProvider.isCPacketPlayer(cpacket)) { // Cancel all movement stuff
-                        event.cancelEvent()
-
-                    }
-
-
-                if (classProvider.isCPacketPlayerPosition(cpacket) || classProvider.isCPacketPlayerPosLook(cpacket) ||
-                    classProvider.isCPacketPlayerBlockPlacement(cpacket) ||
-                    classProvider.isCPacketAnimation(cpacket) ||
-                    classProvider.isCPacketEntityAction(cpacket) || classProvider.isCPacketUseEntity(cpacket) ) {
+            if(DelayClientPacket.get()){
+                if (packet is CPacketPlayer ) // Cancel all movement stuff
                     event.cancelEvent()
-                    packets.add(cpacket)
+                if (packet is CPacketPlayer.Position || packet is CPacketPlayer.PositionRotation ||
+                    packet is CPacketPlayerTryUseItemOnBlock ||
+                    packet is CPacketAnimation ||
+                    packet is CPacketEntityAction || packet is CPacketUseEntity || (packet::class.java.simpleName.startsWith("C", true) )
+                ) {
+                    event.cancelEvent()
+                    packets.add(packet)
                 }
-                //}
+                if (packet is CPacketConfirmTransaction ) {
+                    event.cancelEvent()
+
+                    packets.add(packet)
+
+                }
             }
             if(ServerPacketTest.get()){
                 if(packet is SPacketEntityVelocity || packet is SPacketEntity || packet is SPacketSpawnPlayer || packet is SPacketEntityTeleport || packet is S15PacketEntityRelMove){
@@ -182,7 +182,7 @@ class GrimVelocity : Module() {
 
                 if(!packets.isEmpty()){
                     //blink()
-                    mc.netHandler!!.networkManager.sendPacket(packets.take())
+                    mc2.connection!!.networkManager.sendPacket(packets.take())
                     packets.clear()
                     debug("C0fResend")
                 }

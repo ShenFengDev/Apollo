@@ -73,7 +73,7 @@ public abstract class MixinGuiInGame extends MixinGui {
 
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
+            //mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
 
             float f = this.zLevel;
             this.zLevel = -90.0F;
@@ -98,7 +98,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+           GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             RenderHelper.enableGUIStandardItemLighting();
 
             for (int l = 0; l < 9; ++l) {

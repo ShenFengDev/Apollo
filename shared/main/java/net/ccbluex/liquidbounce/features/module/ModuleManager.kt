@@ -80,7 +80,7 @@ class ModuleManager : Listenable {
             Pendant::class.java,
                 Criticals::class.java,
                 KillAura::class.java,
-            BoatJump::class.java,
+
                 Trigger::class.java,
                 Velocity::class.java,
 
@@ -125,7 +125,7 @@ class ModuleManager : Listenable {
                 Step::class.java,
                 AutoRespawn::class.java,
                 AutoTool::class.java,
-                AntiFireBall::class.java,
+
                 NoWeb::class.java,
                 Spammer::class.java,
 

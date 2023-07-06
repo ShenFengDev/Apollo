@@ -69,11 +69,15 @@ open class Module() : MinecraftInstance(), Listenable {
 
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
-                //mc.soundHandler.playSound("random.click", 1F)
-                if(value)mc.soundHandler.playSound("random.click", 1F)else mc.soundHandler.playSound("random.click", 1F)
-                LiquidBounce.hud.addNotification(Notification("Notification","${if (value) "Enabled "
-                else "Disabled "}$name", if(value) NotifyType.SUCCESS
-                else NotifyType.ERROR))
+                if(value){
+                    mc.soundHandler.playSound("block.stone_pressureplate.click_on", 1F)
+                    LiquidBounce.hud.addNotification(Notification("Module toggled",
+                        "$name Enable", NotifyType.SUCCESS))
+                }else{
+                    mc.soundHandler.playSound("block.stone_pressureplate.click_on", 0.5F)
+                    LiquidBounce.hud.addNotification(Notification("Module toggled",
+                        "$name Disable", NotifyType.ERROR))
+                }
             }
 
             // Call on enabled or disabled

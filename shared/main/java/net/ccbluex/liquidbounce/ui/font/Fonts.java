@@ -33,6 +33,8 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer flux;
     @FontDetails(fontName = "flux", fontSize = 45)
     public static IFontRenderer flux45;
+    @FontDetails(fontName = "noti", fontSize = 80)
+    public static  IFontRenderer Noti80;
 
     @FontDetails(fontName = "tenacitycheck", fontSize = 60)
     public static IFontRenderer tenacitycheck60;
@@ -166,7 +168,7 @@ public class Fonts extends MinecraftInstance {
         font40 = classProvider.wrapFontRenderer(new GameFontRenderer(getSFUI(40)));
         font30 = classProvider.wrapFontRenderer(new GameFontRenderer(getSFUI(30)));
         font80 = classProvider.wrapFontRenderer(new GameFontRenderer(getSFUI(80)));
-
+        Noti80 = classProvider.wrapFontRenderer(new GameFontRenderer(getNoti((80))));
         tenacitycheck60 = classProvider.wrapFontRenderer(new GameFontRenderer(getCrack(60)));
 
 
@@ -409,6 +411,19 @@ public class Fonts extends MinecraftInstance {
         Font font;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/CasanovaScotia.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", 0, size);
+        }
+        return font;
+    }
+    private static Font getNoti(int size) {
+        Font font;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/notiicon.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {
