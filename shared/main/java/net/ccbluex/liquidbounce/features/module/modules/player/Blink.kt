@@ -33,7 +33,7 @@ class Blink : Module() {
     private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000)
     private val hytValue = BoolValue("Hyt",true)
 
-    private val inBus = LinkedList<Packet<INetHandlerPlayClient>>()
+
     private val pulseTimer = MSTimer()
     override fun onEnable() {
         if (mc.thePlayer == null) return
@@ -84,9 +84,7 @@ class Blink : Module() {
             while (!packets.isEmpty()) {
                 mc2.connection!!.networkManager.sendPacket(packets.take())
             }
-            while (!inBus.isEmpty()) {
-                inBus.poll()?.processPacket(mc2!!.connection)
-            }
+
             disableLogger = false
         } catch (e: Exception) {
             e.printStackTrace()

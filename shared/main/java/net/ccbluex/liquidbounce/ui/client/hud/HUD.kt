@@ -22,6 +22,7 @@ open class HUD : MinecraftInstance() {
     companion object {
 
         val elements = arrayOf(
+            Notifications::class.java,
                 Inventory::class.java,
                 Armor::class.java,
             Text2::class.java,

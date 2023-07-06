@@ -44,22 +44,12 @@ class SuperKnockback : Module() {
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
                         return
                     }
-                    if(!mc.thePlayer!!.sprinting){
+                    if(!mc.thePlayer!!.sprinting && MovementUtils.isMoving){
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
                     }
-                    if (theplayer.sprinting) {
+                    if (theplayer.sprinting && MovementUtils.isMoving) {
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    }
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                    if(!MovementUtils.isMoving){
-                        return
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
                     }
                     if(mc.thePlayer!!.sprinting&& MovementUtils.isMoving){
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
