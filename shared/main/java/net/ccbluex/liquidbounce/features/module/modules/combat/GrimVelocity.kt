@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -18,7 +17,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
-import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraft.network.play.server.SPacketEntity.S15PacketEntityRelMove
@@ -49,14 +47,16 @@ class GrimVelocity : Module() {
     private val S32Packet = LinkedList<Packet<INetHandlerPlayClient>>()
     private val SPacket = LinkedList<Packet<INetHandlerPlayClient>>()
     private val debugValue = BoolValue("debug",false)
-    //private val bl1nk = LiquidBounce.moduleManager.getModule(Blink::class.java)
+    private val bl1nk = LiquidBounce.moduleManager.getModule(Blink::class.java)
     fun debug(s: String) {
         if (debugValue.get())
             ClientUtils.displayChatMessage(s)
     }
     override fun onEnable() {
         if(DelayClientPacket.get()){
-            packets.clear()
+            if(bl1nk!!.state == true) {
+                bl1nk!!.state = false
+            }
         }
         cancelPackets=0
 
@@ -65,15 +65,16 @@ class GrimVelocity : Module() {
     }
     override fun onDisable(){
         if(DelayClientPacket.get()){
-            packets.clear()
+            if(bl1nk!!.state == true) {
+                bl1nk!!.state = false
+            }
         }
-
         S32Packet.clear()
         C0fPacket.clear()
     }
     @EventTarget
     fun onWorld(event:WorldEvent){
-        packets.clear()
+
         S32Packet.clear()
         C0fPacket.clear()
     }
@@ -81,7 +82,6 @@ class GrimVelocity : Module() {
     fun onPacket(event: PacketEvent){
         if((OnlyMove.get()&&!MovementUtils.isMoving)||(OnlyGround.get()&&!mc.thePlayer!!.onGround)){return}
         val packet = event.packet.unwrap()
-        val cpacket = event.packet
         if(S08>0){
             S08--
             debug("Off $S08")
@@ -104,13 +104,10 @@ class GrimVelocity : Module() {
                     packet.motionX = 0
                     packet.motionY = 0
                     packet.motionZ = 0
-                    event.cancelEvent()
                 }
-            }else if(cancelS12PacketValue.get()){
-
-
+            }else{
+                if(cancelS12PacketValue.get())
                     event.cancelEvent()
-
             }
 
             cancelPackets = if(mc.thePlayer!!.onGround) cancelPacketValue.get() else AirCancelPacketValue.get()
@@ -132,8 +129,8 @@ class GrimVelocity : Module() {
             cancelPackets--
         }
         if(cancelPackets > 0){
-            if(DelayClientPacket.get()){
-                if (packet is CPacketPlayer ) // Cancel all movement stuff
+            if(DelayClientPacket.get() && (MovementUtils.isMoving||!OnlyMove.get())){
+                if (packet is CPacketPlayer ||(packet is CPacketPlayerTryUseItemOnBlock&& classProvider.isItemSword(mc.thePlayer!!.heldItem))) // Cancel all movement stuff
                     event.cancelEvent()
                 if (packet is CPacketPlayer.Position || packet is CPacketPlayer.PositionRotation ||
                     packet is CPacketPlayerTryUseItemOnBlock ||
@@ -179,13 +176,7 @@ class GrimVelocity : Module() {
 
         if(cancelPackets == 0){
             if(DelayClientPacket.get()){
-
-                if(!packets.isEmpty()){
-                    //blink()
-                    mc2.connection!!.networkManager.sendPacket(packets.take())
-                    packets.clear()
-                    debug("C0fResend")
-                }
+                mc2.connection!!.networkManager.sendPacket(packets.take())
             }
             if(!C0fPacket.isEmpty()){
                 while (!C0fPacket.isEmpty()) {
@@ -210,6 +201,5 @@ class GrimVelocity : Module() {
             }
         }
     }
-
 
 }
