@@ -28,6 +28,7 @@ class AutoGG : Module() {
     val InventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java] as InventoryCleaner
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        if(mc.thePlayer == null) return
         val packet = event.packet.unwrap()
 
         if (packet is SPacketChat) {

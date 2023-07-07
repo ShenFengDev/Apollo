@@ -226,9 +226,9 @@ class ModuleManager : Listenable {
             //HytDisabler::class.java,
             GrimVelocity::class.java,
             StrafeFix::class.java,
-            FollowTargetHud::class.java,
+            //FollowTargetHud::class.java,
             AntiFakePlayer::class.java,
-            AutoGG::class.java,
+            //AutoGG::class.java,
 
             HytAntiBot::class.java,
             BanChecker::class.java,

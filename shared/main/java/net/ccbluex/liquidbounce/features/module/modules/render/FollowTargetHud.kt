@@ -20,8 +20,8 @@ import java.awt.Color
 
 @ModuleInfo(name = "FollowTargetHud", description="FDP", category = ModuleCategory.RENDER)
 object FollowTargetHud : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Arris", "FDP"), "Juul")
-    private val fontValue = FontValue("Font", Fonts.minecraftFont)
+    val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Arris", "FDP"), "Juul")
+    val fontValue = FontValue("Font", Fonts.minecraftFont)
     private val jelloColorValue = BoolValue("JelloHPColor", true)
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255)
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
@@ -54,7 +54,7 @@ object FollowTargetHud : Module() {
         val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
         if (entity != killAura.target) {
             return
-        } else if ( entity == killAura.target) {
+        } else if ( entity == killAura.target && killAura.target != null) {
             entityKeep = entity.name.toString()
             targetTicks++
             if (targetTicks >= 5) {

@@ -297,15 +297,17 @@ class KillAura : Module() {
     fun onMotion(event: MotionEvent) {
         if (this.stopSprintAir.get()) {
             if (mc.thePlayer!!.onGround) {
+                if(this.keepSprintValue.get()) return
                 this.keepSprintValue.set(true)
             } else {
+                if(!this.keepSprintValue.get()) return
                 this.keepSprintValue.set(false)
             }
         }
 
 
 
-        if (event.eventState == EventState.POST) {
+        if (event.eventState == EventState.PRE) {
             target ?: return
             currentTarget ?: return
 
@@ -314,7 +316,7 @@ class KillAura : Module() {
             if(currentTarget==  null){
                 stopBlocking()
             }
-            if (!autoBlockValue.get().equals("off", true) && delayedBlockValue.get() && canBlock()) {
+            if (!autoBlockValue.get().equals("off", true)  && canBlock()) {
                 startBlocking(currentTarget!!, interactAutoBlockValue.get())
             }
             return

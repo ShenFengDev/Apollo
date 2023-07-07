@@ -14,14 +14,13 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-
-
+import net.minecraft.network.play.client.CPacketEntityAction
 
 
 @ModuleInfo(name = "SuperKnockback", description = "A module of control player attack knockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val modeValue = ListValue("Mode", arrayOf("Packet","Wtap" ), "Packet")
+    private val modeValue = ListValue("Mode", arrayOf("Smart","wtap" ), "Smart")
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delay = IntegerValue("Delay", 0, 0, 500)
@@ -36,24 +35,15 @@ class SuperKnockback : Module() {
                 return
             }
             when (modeValue.get().toLowerCase()) {
-                "packet" -> {
-                    val theplayer = mc.thePlayer ?: return
+                "smart" -> {
+                    if(mc.thePlayer!!.sprinting){
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
+                    }else{
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                    }
 
-                    if(!MovementUtils.isMoving){
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                        return
-                    }
-                    if(!mc.thePlayer!!.sprinting && MovementUtils.isMoving){
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    }
-                    if (theplayer.sprinting && MovementUtils.isMoving) {
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.STOP_SPRINTING))
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    }
-                    if(mc.thePlayer!!.sprinting&& MovementUtils.isMoving){
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(theplayer, ICPacketEntityAction.WAction.START_SPRINTING))
-                    }
 
                 }
 
@@ -61,6 +51,7 @@ class SuperKnockback : Module() {
                     if (mc2.player.isSprinting) {
                         mc2.player.isSprinting = false
                     }
+
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
 
                 }
