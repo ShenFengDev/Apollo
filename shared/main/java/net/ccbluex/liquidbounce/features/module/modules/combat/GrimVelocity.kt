@@ -15,8 +15,10 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
+import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraft.network.play.server.SPacketEntity.S15PacketEntityRelMove
@@ -61,9 +63,24 @@ class GrimVelocity : Module() {
     }
     override fun onDisable(){
         cancelPackets=0
-        packets.clear()
-        S32Packet.clear()
-        C0fPacket.clear()
+        if(!packets.isEmpty()){
+            mc2.connection!!.networkManager.sendPacket(packets.take())
+            packets.clear()
+        }else{
+            packets.clear()
+        }
+
+            S32Packet.clear()
+
+        if(!C0fPacket.isEmpty()){
+            mc2.connection!!.networkManager.sendPacket(C0fPacket.take())
+            C0fPacket.clear()
+        }else{
+            C0fPacket.clear()
+        }
+
+
+
     }
     @EventTarget
     fun onWorld(event:WorldEvent){
@@ -78,7 +95,7 @@ class GrimVelocity : Module() {
         val packet = event.packet.unwrap()
         if(S08>0){
             S08--
-            //debug("Off $S08")
+            debug("off $S08")
             return
         }
         if(packet is SPacketPlayerPosLook){
@@ -199,14 +216,14 @@ class GrimVelocity : Module() {
             }
             if(S32Test.get()){
                 while (!S32Packet.isEmpty()&&S32Packet.size > 0) {
-                    S32Packet.poll()?.processPacket(mc2.connection)
+                    S32Packet.poll()?.processPacket(mc2.connection as INetHandlerPlayClient)
                     S32Packet.clear()
                     debug("S32Test")
                 }
             }
             if(ServerPacketTest.get()){
                 while (SPacket.size > 0 && !SPacket.isEmpty()) {
-                    SPacket.poll()?.processPacket(mc2.connection)
+                    SPacket.poll()?.processPacket(mc2.connection as INetHandlerPlayClient)
                     SPacket.clear()
                     debug("STest")
                 }

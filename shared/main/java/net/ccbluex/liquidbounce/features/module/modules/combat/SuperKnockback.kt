@@ -20,7 +20,7 @@ import net.minecraft.network.play.client.CPacketEntityAction
 @ModuleInfo(name = "SuperKnockback", description = "A module of control player attack knockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val modeValue = ListValue("Mode", arrayOf("Smart","wtap" ), "Smart")
+    private val modeValue = ListValue("Mode", arrayOf("Old","Smart","wtap" ), "Smart")
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delay = IntegerValue("Delay", 0, 0, 500)
@@ -35,10 +35,23 @@ class SuperKnockback : Module() {
                 return
             }
             when (modeValue.get().toLowerCase()) {
+                "old"->{
+
+                    if (mc.thePlayer!!.sprinting) {
+                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                    }
+                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
+                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                    mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
+
+                    mc.thePlayer!!.sprinting = true
+                    mc.thePlayer!!.serverSprintState = true
+                }
                 "smart" -> {
                     if(mc.thePlayer!!.sprinting){
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
+                        mc2.player.serverSprintState = true
                     }else{
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
                         mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
@@ -53,7 +66,7 @@ class SuperKnockback : Module() {
                     }
 
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
-
+                    mc2.player.serverSprintState = true
                 }
 
             }

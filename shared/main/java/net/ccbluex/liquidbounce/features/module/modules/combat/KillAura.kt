@@ -165,7 +165,7 @@ class KillAura : Module() {
     private val rotations = ListValue("RotationMode", arrayOf("None", "LockView", "BackTrack", "Hyt", "LiquidBounce", "HytRotation"), "Hyt")
     private val outborderValue = BoolValue("Outborder", false)
     private val silentRotationValue = BoolValue("SilentRotation", true)
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent","Hyt"), "Off")
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
     private val hitableValue = BoolValue("AlwaysHitable",true)
     // Predict
@@ -367,10 +367,43 @@ class KillAura : Module() {
                     event.cancelEvent()
                 }
                 "silent" -> {
-                    update()
 
-                    //RotationUtils.targetRotation.applyStrafeToPlayer(event)
+
+
                     (LiquidBounce.moduleManager.getModule(StrafeFix::class.java) as StrafeFix).runStrafeFixLoop(true,event)
+                    event.cancelEvent()
+                }
+                "hyt"->{
+                    if (RotationUtils.getRotationDifference(target) > 90.0) {
+                        val (yaw) = RotationUtils.targetRotation ?: return
+                        var strafe = event.strafe
+                        var forward = event.forward
+                        val friction = event.friction
+
+                        var f = strafe * strafe + forward * forward
+
+                        if (f >= 1.0E-4F) {
+                            f = sqrt(f)
+
+                            if (f < 1.0F)
+                                f = 1.0F
+
+                            f = friction / f
+                            strafe *= f
+                            forward *= f
+
+                            val yawSin = sin((yaw * Math.PI / 180F).toFloat())
+                            val yawCos = cos((yaw * Math.PI / 180F).toFloat())
+
+                            val player = mc.thePlayer!!
+
+                            player.motionX += strafe * yawCos - forward * yawSin
+                            player.motionZ += forward * yawCos + strafe * yawSin
+                        }
+                    } else {
+
+                        (LiquidBounce.moduleManager.getModule(StrafeFix::class.java) as StrafeFix).runStrafeFixLoop(true,event)
+                    }
                     event.cancelEvent()
                 }
             }

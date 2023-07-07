@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import co.uk.hexeption.utils.C08PacketPlayerBlockPlacement
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.enums.EnumFacingType
 import net.ccbluex.liquidbounce.api.minecraft.item.IItem
 import net.ccbluex.liquidbounce.api.minecraft.network.play.client.ICPacketPlayerDigging
@@ -10,8 +11,10 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -53,7 +56,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (!MovementUtils.isMoving)
+        if (!MovementUtils.isMoving|| classProvider.isItemBlock(mc.thePlayer!!.heldItem?.item))
             return
 
 
@@ -69,12 +72,12 @@ class NoSlow : Module() {
                 mc.netHandler.addToSendQueue(classProvider.createCPacketHeldItemChange(curSlot))
             }
 
-            if (event.eventState == EventState.PRE && (classProvider.isItemSword(mc.thePlayer!!.heldItem?.item) || mc.gameSettings.keyBindUseItem.isKeyDown)) {
+            if (event.eventState == EventState.PRE && (classProvider.isItemSword(mc.thePlayer!!.heldItem?.item) && (mc.gameSettings.keyBindUseItem.isKeyDown||LiquidBounce.moduleManager.getModule(KillAura::class.java).state))) {
 
                     mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerBlockPlacement(mc.thePlayer!!.inventory.getCurrentItemInHand()))
                     mc2.connection!!.sendPacket(
                         C08PacketPlayerBlockPlacement(
-                            getHytBlockpos(), 255,
+                            currentBlock, 255,
                             EnumHand.MAIN_HAND, 0f, 0f, 0f
                         )
                     )
@@ -82,7 +85,15 @@ class NoSlow : Module() {
             }
 
     }
+    private val currentBlock: WBlockPos?
+        get() {
+            val blockPos = mc.objectMouseOver?.blockPos ?: return null
 
+            if (BlockUtils.canBeClicked(blockPos) && mc.theWorld!!.worldBorder.contains(blockPos))
+                return blockPos
+
+            return null
+        }
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer!!.heldItem?.item
@@ -106,13 +117,7 @@ class NoSlow : Module() {
         }
     }
 
-    private fun getHytBlockpos(): WBlockPos {
-        val random = java.util.Random()
-        val dx = WMathHelper.floor_double(random.nextDouble() / 1000 + 2820)
-        val jy = WMathHelper.floor_double(random.nextDouble() / 100 * 0.20000000298023224)
-        val kz = WMathHelper.floor_double(random.nextDouble() / 1000 + 2820)
-        return WBlockPos(dx, -jy % 255, kz)
-    }
+
 
     override val tag: String
         get() = "GrimAC"

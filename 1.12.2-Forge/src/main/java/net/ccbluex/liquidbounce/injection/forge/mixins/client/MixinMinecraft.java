@@ -57,6 +57,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.classProvider;
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 
 @Mixin(Minecraft.class)
 @SideOnly(Side.CLIENT)
@@ -203,7 +204,7 @@ public abstract class MixinMinecraft {
 
         final FastPlace fastPlace = (FastPlace) LiquidBounce.moduleManager.getModule(FastPlace.class);
 
-        if (fastPlace.getState())
+        if (fastPlace.getState()&&classProvider.isItemBlock(mc.getThePlayer().getHeldItem()))
             rightClickDelayTimer = fastPlace.getSpeedValue().get();
     }
 
