@@ -5,13 +5,16 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.combat.GrimVelocity
 import net.ccbluex.liquidbounce.injection.backend.unwrap
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -36,6 +39,7 @@ class Blink : Module() {
 
     private val pulseTimer = MSTimer()
     override fun onEnable() {
+
         if (mc.thePlayer == null) return
         pulseTimer.reset()
     }
@@ -48,12 +52,13 @@ class Blink : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet.unwrap()
         if (mc.thePlayer == null || disableLogger) return
-        if (packet is CPacketPlayer ||(packet is CPacketPlayerTryUseItemOnBlock&& classProvider.isItemSword(mc.thePlayer!!.heldItem))) // Cancel all movement stuff
+        if (packet is CPacketPlayer ){ // Cancel all movement stuff
             event.cancelEvent()
+        }
         if (packet is Position || packet is PositionRotation ||
             packet is CPacketPlayerTryUseItemOnBlock ||
             packet is CPacketAnimation ||
-            packet is CPacketEntityAction || packet is CPacketUseEntity || (packet::class.java.simpleName.startsWith("C", true) && hytValue.get())
+            packet is CPacketEntityAction || packet is CPacketUseEntity ||packet is CPacketPlayerTryUseItem|| (packet::class.java.simpleName.startsWith("C", true) && hytValue.get())
         ) {
             event.cancelEvent()
             packets.add(packet)

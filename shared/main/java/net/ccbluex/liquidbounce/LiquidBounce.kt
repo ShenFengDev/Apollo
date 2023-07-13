@@ -53,7 +53,7 @@ object LiquidBounce {
 
     // Client information
      var CLIENT_NAME = "Apollo"
-    const val CLIENT_VERSION = 1.1
+    const val CLIENT_VERSION = 1.3
     const val CLIENT_CREATOR = "LiquidBounce-Team"
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"

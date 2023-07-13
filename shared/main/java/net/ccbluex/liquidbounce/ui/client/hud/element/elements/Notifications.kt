@@ -124,7 +124,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
                 if(pct>1){
                     fadeState= FadeState.STAY
                     animeXTime=nowTime
-                    pct=5.0
+                    pct=3.0
                 }
                 pct= EaseUtils.easeOutQuart(pct)
                 transY+=(realY-nowY)*pct
@@ -132,7 +132,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
 
             FadeState.STAY -> {
                 pct=1.0
-                if((nowTime-animeXTime * 0.8)>time){
+                if(nowTime-animeXTime >time){
                     fadeState= FadeState.OUT
                     animeXTime=nowTime
                 }

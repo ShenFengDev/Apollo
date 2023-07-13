@@ -33,6 +33,8 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer flux;
     @FontDetails(fontName = "flux", fontSize = 45)
     public static IFontRenderer flux45;
+    @FontDetails(fontName = "logo", fontSize = 30)
+    public static IFontRenderer logo30;
     @FontDetails(fontName = "noti", fontSize = 80)
     public static  IFontRenderer Noti80;
 
@@ -93,7 +95,8 @@ public class Fonts extends MinecraftInstance {
     public static IFontRenderer font40;
     @FontDetails(fontName = "Roboto Medium", fontSize = 80)
     public static IFontRenderer font80;
-
+    @FontDetails(fontName = "Light", fontSize = 30)
+    public static IFontRenderer light30;
 //
 //    @FontDetails(fontName = "Roboto Bold", fontSize =72)
 //    public static IFontRenderer fontBold72;
@@ -160,7 +163,7 @@ public class Fonts extends MinecraftInstance {
 //        downloadFonts();
         flux = classProvider.wrapFontRenderer(new GameFontRenderer(getFlux(30)));
         flux45= classProvider.wrapFontRenderer(new GameFontRenderer(getFlux(45)));
-
+        logo30 = classProvider.wrapFontRenderer(new GameFontRenderer(getLogo(30)));
 
 
         font35 = classProvider.wrapFontRenderer(new GameFontRenderer(getSFUI(35)));
@@ -194,7 +197,7 @@ public class Fonts extends MinecraftInstance {
 //        regular45 = classProvider.wrapFontRenderer(new GameFontRenderer(getregular(45)));
 //        regular72 = classProvider.wrapFontRenderer(new GameFontRenderer(getregular(72)));
 //        regular180 = classProvider.wrapFontRenderer(new GameFontRenderer(getregular(180)));
-
+        light30 = classProvider.wrapFontRenderer(new GameFontRenderer(getLight(30)));
         bold35 = classProvider.wrapFontRenderer(new GameFontRenderer(getBold(35)));
         bold40 = classProvider.wrapFontRenderer(new GameFontRenderer(getBold(40)));
 //        bold45 = classProvider.wrapFontRenderer(new GameFontRenderer(getBold(45)));
@@ -290,6 +293,32 @@ public class Fonts extends MinecraftInstance {
             font = new Font("default", 0, size);
         }
         return font;
+    }//Lingxun-style-Light
+    private static Font getLight(int size) {
+        Font font;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/Lingxun-style-Light.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", 0, size);
+        }
+        return font;
+    }
+    private static Font getLogo(int size) {
+        Font font;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/Logofont.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", 0, size);
+        }
+        return font;
     }
     public static IFontRenderer getFontRenderer(final String name, final int size) {
         for (final Field field : Fonts.class.getDeclaredFields()) {
@@ -353,7 +382,7 @@ public class Fonts extends MinecraftInstance {
     private static Font getregular(int size) {
         Font font;
         try {
-            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/regular.ttf")).getInputStream();
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/Lingxun-style-regular.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {
@@ -366,7 +395,7 @@ public class Fonts extends MinecraftInstance {
     private static Font getBold(int size) {
         Font font;
         try {
-            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/bold.ttf")).getInputStream();
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/Lingxun-style-bold.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {

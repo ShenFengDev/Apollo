@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.minecraft.client.entity.IEntityLivingBase
 import net.ccbluex.liquidbounce.api.minecraft.util.IResourceLocation
 import net.ccbluex.liquidbounce.features.module.modules.color.Gident
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -53,8 +52,8 @@ import java.util.*
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "TargetHUD")
-class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Tenacity5","Rice","Romantic","WaterMelon","SparklingWater","Best","Novoline","Astolfo","Liquid","Flux","Rise","Zamorozka","novoline2","moon","novoline3","newnovoline","tenacity"), "Rise")
+class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
+    private val modeValue = ListValue("Mode", arrayOf("Apollo","Tenacity5","Rice","Romantic","WaterMelon","SparklingWater","Best","Novoline","Astolfo","Liquid","Flux","Rise","Zamorozka","novoline2","moon","novoline3","newnovoline","tenacity"), "Rise")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom","None"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -147,7 +146,7 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
         var target = LiquidBounce.combatManager.target
         //var target=(LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
         val time=System.currentTimeMillis()
-        val pct = (time - lastUpdate) / (switchAnimSpeedValue.get()*50f)
+        val pct = (time - lastUpdate) / (switchAnimSpeedValue.get()*20f)
         lastUpdate=System.currentTimeMillis()
 
         if (classProvider.isGuiHudDesigner(mc.currentScreen)) {
@@ -237,6 +236,7 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
             "romantic"->drawRomantic(prevTarget!!,nowAnimHP)
             "tenacity5" -> drawTenacity5(prevTarget!!,nowAnimHP)
             "rice" -> drawRice(prevTarget!!,nowAnimHP)
+            "apollo"-> drawApollo(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -719,7 +719,58 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
                 36, 24, 0xffffff)
         }
     }
+    private fun drawApollo(target: IEntityLivingBase, easingHealth: Float){
+        val width = (38 + Fonts.font40.getStringWidth(target.name!!))
+            .coerceAtLeast(118)
+            .toFloat()
+        // Draw rect box
+        //RenderUtils.drawBorderedRect(0F, 0F, width, 36F, 5F, Color.BLACK.rgb, Color.BLACK.rgb)
+        RenderUtils.drawRect(0F,0F,width+5f,35F,Color.BLACK.rgb)
+        //colours
+        val c1 = ColorUtil.interpolateColorsBackAndForth(17, 0, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+        val c2 = ColorUtil.interpolateColorsBackAndForth(17, 90, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+        val c3 = ColorUtil.interpolateColorsBackAndForth(17, 270, Color(230, 230, 55, 205), Color(101, 208, 252, 205), true);
+        val c4 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(230, 230, 55, 205), Color(101, 208, 252, 205), true);
+        val c5 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(255, 0, 0, 205), Color(101, 208, 252, 205), true);
+        val c6 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(255, 0, 0, 205), Color(101, 208, 252, 205), true);
 
+        val healthstage1 = target.health>(target.maxHealth / 2)
+        val healthstage2 = target.health <((target.maxHealth/3)*2)
+        val healthstage3 = target.health <((target.maxHealth/3))
+
+        // Health bar
+        //healthstage1
+        if(healthstage1){
+            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f, 4F, 2F, c1, c2, c3, c4);
+
+        }
+
+        // healthstage2
+        if (healthstage2)
+            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f, 4F, 2F, c5, c6, c1, c2);
+
+
+        // Health bar
+       // RenderUtils.drawRect(0F, 34F, (getHealth(target) / target.maxHealth) * width,
+        //    36F, ColorUtils.ALLColor(200).rgb)
+
+        // healthstage3
+        if (healthstage3)
+            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f , 4F, 2F, c3, c4, c5, c6);
+
+
+        target.name.let { FontLoaders.F18.drawString(it!!, 36, 3, Color.WHITE.rgb) }
+        Fonts.font35.drawString("HP: ${decimalFormat.format(target.health)}", 35, 15, 0xffffff)
+
+        // Draw Head
+        RenderUtils.drawHead(mc.netHandler.getPlayerInfo(target.uniqueID)!!.locationSkin, 1, 1, 32, 32)
+        // Draw info
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
+        //if (playerInfo != null) {
+        //    Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+           //     36, 24, 0xffffff)
+        //}
+    }
     private fun drawZamorozka(target: IEntityLivingBase, easingHealth: Float){
         val font=fontValue.get()
 
@@ -1098,7 +1149,8 @@ class Target2 : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MID
             "watermelon" -> Border(0F, 0F, 120F, 48F)
             "sparklingwater" -> Border(0F, 0F, 120F, 48F)
             "tenacity"-> Border(0F,0F,140F,40F)
-
+            "apollo"->Border(0F,0F
+                ,(33 + Fonts.font40.getStringWidth(mc.thePlayer!!.name!!).coerceAtLeast(118).toFloat()),36F)
             else -> null
         }
     }

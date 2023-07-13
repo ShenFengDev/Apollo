@@ -296,18 +296,18 @@ class KillAura : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (this.stopSprintAir.get()) {
-            if (mc.thePlayer!!.onGround) {
-                if(this.keepSprintValue.get()) return
+            if (mc.thePlayer!!.onGround &&!this.keepSprintValue.get()) {
+
                 this.keepSprintValue.set(true)
-            } else {
-                if(!this.keepSprintValue.get()) return
+            } else if(!mc.thePlayer!!.onGround &&this.keepSprintValue.get()){
+
                 this.keepSprintValue.set(false)
             }
         }
 
 
 
-        if (event.eventState == EventState.PRE) {
+        if (event.eventState == EventState.POST) {
             target ?: return
             currentTarget ?: return
 
@@ -322,8 +322,9 @@ class KillAura : Module() {
             return
 
         }
-        if (rotationStrafeValue.get().equals("Off", true))
+        if (rotationStrafeValue.get()== "Off" ){
             update()
+        }
     }
 
     /**
@@ -334,10 +335,13 @@ class KillAura : Module() {
         if (rotationStrafeValue.get().equals("Off", true))
             return
 
+
         update()
+
 
         if (currentTarget != null && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().toLowerCase()) {
+
                 "strict" -> {
                     val (yaw) = RotationUtils.targetRotation ?: return
                     var strafe = event.strafe
@@ -364,14 +368,17 @@ class KillAura : Module() {
                         player.motionX += strafe * yawCos - forward * yawSin
                         player.motionZ += forward * yawCos + strafe * yawSin
                     }
+
                     event.cancelEvent()
+
                 }
                 "silent" -> {
 
 
-
+                    update()
                     (LiquidBounce.moduleManager.getModule(StrafeFix::class.java) as StrafeFix).runStrafeFixLoop(true,event)
                     event.cancelEvent()
+
                 }
                 "hyt"->{
                     if (RotationUtils.getRotationDifference(target) > 90.0) {
@@ -401,12 +408,17 @@ class KillAura : Module() {
                             player.motionZ += forward * yawCos + strafe * yawSin
                         }
                     } else {
-
+                        update()
                         (LiquidBounce.moduleManager.getModule(StrafeFix::class.java) as StrafeFix).runStrafeFixLoop(true,event)
                     }
+
                     event.cancelEvent()
+
                 }
+
+
             }
+
         }
     }
 
@@ -432,7 +444,7 @@ class KillAura : Module() {
     }
     @EventTarget
     fun onMove(event: MoveEvent){
-        if(KaFix.get() && LiquidBounce.moduleManager.getModule(NoC03::class.java).state){
+        if(KaFix.get() ){
 
                 if (mc.thePlayer!!.onGround){
 
@@ -1521,7 +1533,7 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         inline get() = mc.gameSettings.keyBindAttack.pressed||mc.thePlayer!!.spectator || !isAlive(mc.thePlayer!!)
-                || LiquidBounce.moduleManager[Blink::class.java].state || LiquidBounce.moduleManager[FreeCam::class.java].state
+                 || LiquidBounce.moduleManager[FreeCam::class.java].state
 
     /**
      * Check if [entity] is alive

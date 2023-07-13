@@ -125,7 +125,7 @@ public class Debug extends MinecraftInstance {
         GlStateManager.rotate(var5 * -80.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.scale(OldHitting.Scale.get(), OldHitting.Scale.get(), OldHitting.Scale.get());
     }
-    private void transformFirstPersonItem1(EnumHandSide p_187459_1_, float equippedProg, float swingProgress)
+    public static void transformFirstPersonItem1(EnumHandSide p_187459_1_, float equippedProg, float swingProgress)
     {
         int side = p_187459_1_ == EnumHandSide.RIGHT ? 1 : -1;
         GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
@@ -196,10 +196,44 @@ public class Debug extends MinecraftInstance {
         //GlStateManager.scale(0.4f, 0.4f, 0.4f);
         GlStateManager.scale(OldHitting.Scale.get(), OldHitting.Scale.get(), OldHitting.Scale.get());
     }
-    public static void doBlockTransformations() {
-        GlStateManager.translate(-0.5f, 0.2f, 0f);
-        GlStateManager.rotate(30f, 0f, 1f, 0f);
-        GlStateManager.rotate(-80f, 1f, 0f, 0f);
-        GlStateManager.rotate(60f, 0f, 1f, 0f);
+    public static void doBlockTransformations(EnumHandSide p_187459_1_, float equippedProg, float swingProgress) {
+        int side = p_187459_1_ == EnumHandSide.RIGHT ? 1 : -1;
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, equippedProg * -0.6F, 0.0F);
+        GlStateManager.rotate(-102.25F, 1, 0, 0);
+        GlStateManager.rotate(side * 13.365F, 0, 1, 0);
+        GlStateManager.rotate(side * 78.050003F, 0, 0, 1);
+        double f = MathHelper.sin(swingProgress * swingProgress * 3.1415927f);
+        double f1 = MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927f);
+
+
+        float var3 = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
+        float var4 = MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
+        GlStateManager.rotate(var3 * -34.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(var4 * -20.7F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(var4 * -100.6F, 1.0F, 0.0F, 0.0F);
+
+
+        GlStateManager.scale(OldHitting.Scale.get(), OldHitting.Scale.get(), OldHitting.Scale.get());
+    }
+    public static void dzbz(EnumHandSide p_187459_1_, float equippedProg, float swingProgress) {
+        int side = p_187459_1_ == EnumHandSide.RIGHT ? 1 : -1;
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, equippedProg * -0.6F, 0.0F);
+        GlStateManager.rotate(-102.25F, 1, 0, 0);
+        GlStateManager.rotate(side * 13.365F, 0, 1, 0);
+        GlStateManager.rotate(side * 78.050003F, 0, 0, 1);
+        double f = MathHelper.sin(swingProgress * swingProgress * 3.1415927f);
+        double f1 = MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927f);
+
+
+        float var3 = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
+        float var4 = MathHelper.sin(MathHelper.sqrt(swingProgress) * 3.1415927F);
+        GlStateManager.rotate(var3 * -34.0F, 0.0F, 0.0F, 0.2F);
+        GlStateManager.rotate(var4 * -20.7F, 0.0F, 0.0F, 0.2F);
+        GlStateManager.rotate(var4 * -120.6F, 0.0F, 0.0F, 0.2F);
+
+
+        GlStateManager.scale(OldHitting.Scale.get(), OldHitting.Scale.get(), OldHitting.Scale.get());
     }
 }

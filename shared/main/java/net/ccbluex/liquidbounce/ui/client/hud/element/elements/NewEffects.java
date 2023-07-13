@@ -74,7 +74,7 @@ public class NewEffects extends Element {
             }
             float posY = potionData.translate.getY() + 13F;
             Fonts.fontSFUI35.drawString(name + " " + intToRomanByGreedy(potionEffect.getAmplifier() + 1), 29F, posY - mc.getFontRendererObj().getFontHeight(), ClientUtils.reAlpha(HanaBiColors.WHITE.c, 0.8F));
-            Fonts.font35.drawString(potionEffect.getDurationString(), 29F, posY + 4.0F, ClientUtils.reAlpha((new Color(200, 200, 200)).getRGB(), 0.5F));
+            Fonts.font35.drawString(potionEffect.getDurationString(), 29F, posY + 4.0F, ClientUtils.reAlpha((new Color(150, 150, 150)).getRGB(), 1F));
             if (potion.getHasStatusIcon()) {
                 GlStateManager.pushMatrix();
                 GL11.glDisable(2929);

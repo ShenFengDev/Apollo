@@ -31,7 +31,7 @@ open class HUD : MinecraftInstance() {
             Arraylist::class.java,
                 Effects::class.java,
                 Image::class.java,
-            Target2::class.java,
+            TargetHud::class.java,
                 Model::class.java,
                 NewEffects::class.java,
                 Notifications::class.java,

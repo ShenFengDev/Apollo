@@ -154,7 +154,7 @@ public abstract class MixinItemRenderer {
                         break;
 
                     case BLOCK:
-                        this.transformSideFirstPerson(enumhandside, p_187457_7_);
+                        None2(enumhandside, p_187457_7_, p_187457_5_);
 
                         break;
 
@@ -243,9 +243,10 @@ public abstract class MixinItemRenderer {
                                 None2(enumhandside, p_187457_7_, p_187457_5_);
                                 break;
                             }
-                            case "LB":{
-                                //doBlockTransformations();
-                                transformFirstPersonItem(enumhandside, p_187457_7_, p_187457_5_);
+                            case "RedBone":{
+
+
+                                doBlockTransformations(enumhandside, p_187457_7_, p_187457_5_);
 
                             }
                         }

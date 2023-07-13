@@ -4,231 +4,182 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.injection.backend.unwrap
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
-import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
-import net.minecraft.network.play.server.*
-import net.minecraft.network.play.server.SPacketEntity.S15PacketEntityRelMove
+import net.minecraft.network.play.server.SPacketConfirmTransaction
+import net.minecraft.network.play.server.SPacketEntityVelocity
+import net.minecraft.network.play.server.SPacketExplosion
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
-@ModuleInfo(name = "GrimVelocity", description = "Better", category = ModuleCategory.COMBAT)
+/**
+ * skid by XiChenQi
+ * Thanks kid(qwa)、FDPClient
+ * 解决大部分 不显示 不会拉的问题，并且整合了VelocityBlink
+ */
+
+@ModuleInfo(name = "GrimVelocity", description = "GrimFull", category = ModuleCategory.COMBAT)
 class GrimVelocity : Module() {
-    private val cancelPacketValue = IntegerValue("GroundTicks",6,0,100)
-    private val AirCancelPacketValue = IntegerValue("AirTicks",6,0,100)
-    private val cancelS12PacketValue = BoolValue("NoS12",true)
-    private val ModeValue = ListValue("CancelPacket", arrayOf("S32", "C0f","none"), "S32")
-    private val C0fResend = BoolValue("C0fResend",false)
-    private val simple = BoolValue("S27Cancel",false)
-    private val S32Test = BoolValue("S32Spoof",false)
-    val DelayClientPacket = BoolValue("ClintPacketSpoof",false)
-    private val ServerPacketTest = BoolValue("ServerPacketSpoof",false)
-    private val NoMoveFix = BoolValue("NoMoveFix",false)
-    private val OnlyMove = BoolValue("OnlyMove",false)
-    private val OnlyGround = BoolValue("OnlyGround",false)
-    private val AutoDisableMode = ListValue("AutoDisableMode",arrayOf("Safe", "Silent"),"slient")
-    private val AutoSilent = IntegerValue("AutoSilentTicks",8,0,10)
-    var cancelPackets = 0
-    private var resetPersec = 4
+    private val modeValue = ListValue("Mode", arrayOf("CancelS32","Blink"),"Blink")
+    private val disable = BoolValue("AutoDisable",true)
+    private val reEnable = BoolValue("ReEnable",true)
+    //FDP
+    private var cancelPacket = 6
+    private var resetPersecFDP = 8
+    private var grimTCancel = 0
+    private var updatesFDP = 0
+
+    //Kid
+    private var cancelPackets = 0
+    private var resetPersec = 8
     private var updates = 0
-    private var S08 = 0
-    private val C0fPacket = LinkedBlockingQueue<Packet<*>>()
+
+    //VelocityBlink调用的函数
+    //startBlink()
+    //closeblink()
     private val packets = LinkedBlockingQueue<Packet<*>>()
-    private val S32Packet = LinkedList<Packet<INetHandlerPlayClient>>()
-    private val SPacket = LinkedList<Packet<INetHandlerPlayClient>>()
-    private val debugValue = BoolValue("debug",false)
-    private var bllnk = false
-    fun debug(s: String) {
-        if (debugValue.get())
-            ClientUtils.displayChatMessage(s)
-    }
+    private var disableLogger = false
+    private val inBus = LinkedList<Packet<INetHandlerPlayClient>>()
+
+
     override fun onEnable() {
-        cancelPackets=0
-        packets.clear()
-        S32Packet.clear()
-        C0fPacket.clear()
+        grimTCancel = 0
+        cancelPackets = 0
     }
     override fun onDisable(){
-        cancelPackets=0
-        if(!packets.isEmpty()){
-            mc2.connection!!.networkManager.sendPacket(packets.take())
-            packets.clear()
-        }else{
-            packets.clear()
+        if (modeValue.get().equals("New")) {
+            closeblink()
         }
-
-            S32Packet.clear()
-
-        if(!C0fPacket.isEmpty()){
-            mc2.connection!!.networkManager.sendPacket(C0fPacket.take())
-            C0fPacket.clear()
-        }else{
-            C0fPacket.clear()
-        }
-
-
-
     }
+
     @EventTarget
-    fun onWorld(event:WorldEvent){
-        cancelPackets=0
-        packets.clear()
-        S32Packet.clear()
-        C0fPacket.clear()
-    }
-    @EventTarget
-    fun onPacket(event: PacketEvent){
-        if((OnlyMove.get()&&!MovementUtils.isMoving)||(OnlyGround.get()&&!mc.thePlayer!!.onGround)){return}
-        val packet = event.packet.unwrap()
-        if(S08>0){
-            S08--
-            debug("off $S08")
-            return
-        }
-        if(packet is SPacketPlayerPosLook){
-            if(AutoDisableMode.get().equals("silent", ignoreCase = true)){
-                S08 = AutoSilent.get()
-            }
-            if(AutoDisableMode.get().equals("safe", ignoreCase = true)){
-                LiquidBounce.moduleManager[GrimVelocity::class.java].state = false
-            }
-        }
-        if (packet is SPacketEntityVelocity) {
-            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
-                return
-            }
+    fun onPacket(event: PacketEvent) {
+        val thePlayer = mc.thePlayer ?: return
 
-                if(cancelS12PacketValue.get()) {
-                    if(NoMoveFix.get()){
-                        packet.motionX*=0
-                        packet.motionY*=0
-                        packet.motionZ*=0
-                    }
-                    event.cancelEvent()
-
-
-                }
-
-            cancelPackets = if(mc.thePlayer!!.onGround) cancelPacketValue.get() else AirCancelPacketValue.get()
-            bllnk = true
+        val packet = event.packet
+        val packet1 = event.packet.unwrap()
+        fun startBlink(){
+            val packet2 = event.packet.unwrap()
+            if (mc.thePlayer == null || disableLogger) return
+            if (packet2 is CPacketPlayer)
+                event.cancelEvent()
+            if (packet2 is CPacketPlayer.Position || packet2 is CPacketPlayer.PositionRotation ||
+                packet2 is CPacketPlayerTryUseItemOnBlock ||
+                packet2 is CPacketAnimation ||
+                packet2 is CPacketEntityAction || packet2 is CPacketUseEntity || (packet2::class.java.simpleName.startsWith("C", true))
+            ) {
+                event.cancelEvent()
+                packets.add(packet2)
+            }
+            if(packet2::class.java.simpleName.startsWith("S", true)) {
+                if(packet2 is SPacketEntityVelocity && (mc.theWorld?.getEntityByID(packet2.entityID) ?: return) == mc.thePlayer){return}
+                event.cancelEvent()
+                inBus.add(packet2 as Packet<INetHandlerPlayClient>)
+            }
         }
-        if(simple.get()&&bllnk&&packet is SPacketExplosion){
-            cancelPackets--
-            event.cancelEvent()
-        }
-        if ((
-                    (packet is SPacketConfirmTransaction && ModeValue.get().equals("s32", ignoreCase = true))
-                    ||(packet is CPacketConfirmTransaction && ModeValue.get().equals("c0f", ignoreCase = true)) )
-            && cancelPackets > 0){
-            if(C0fResend.get()&&ModeValue.get().equals("c0f", ignoreCase = true)){
-                C0fPacket.add(packet)
-            }
-            if(S32Test.get() && ModeValue.get().equals("s32", ignoreCase = true)){
-                S32Packet.add(packet as Packet<INetHandlerPlayClient>)
-            }
-            if(ModeValue.get().equals("s32", ignoreCase = true)){
-                debug("S32")
-            }else{
-                debug("C0f")
-            }
-            event.cancelEvent()
-            cancelPackets--
-        }
-        if(bllnk){
-            if(DelayClientPacket.get() && (MovementUtils.isMoving||!OnlyMove.get())){
-                if (packet is CPacketPlayer ){ // Cancel all movement stuff
-                    event.cancelEvent()
-                }
-                if (packet is CPacketPlayer.Position || packet is CPacketPlayer.PositionRotation ||
-                    packet is CPacketPlayerTryUseItemOnBlock ||
-                    packet is CPacketAnimation ||
-                    packet is CPacketEntityAction || packet is CPacketUseEntity || (packet::class.java.simpleName.startsWith("C", true) )
-                ) {
-                    event.cancelEvent()
-                    packets.add(packet)
-                }
-                if(classProvider.isCPacketPlayerPosLook(packet)||classProvider.isCPacketPlayerPosition(packet)){
-                    event.cancelEvent()
-                    packets.add(packet)
-                }
-                if(packet is CPacketConfirmTransaction){
-                    event.cancelEvent()
-                    packets.add(packet)
-                }
-                bllnk =false
+        when(modeValue.get()){
+            "CancelS32" -> {
+                if (MovementUtils.isMoving) {
+                    if (classProvider.isSPacketEntityVelocity(packet)) {
+                        val packetEntityVelocity = packet.asSPacketEntityVelocity()
 
-            }
-            if(ServerPacketTest.get()){
-                if(packet is SPacketEntityVelocity || packet is SPacketEntity || packet is SPacketSpawnPlayer || packet is SPacketEntityTeleport || packet is S15PacketEntityRelMove){
-                    if(packet is SPacketEntityVelocity){
-                        if ((mc.theWorld?.getEntityByID(packet.entityID) ?: return) == mc.thePlayer) {
+                        if ((mc.theWorld?.getEntityByID(packetEntityVelocity.entityID) ?: return) != thePlayer)
                             return
-                        }
+
+                        event.cancelEvent()
+                        grimTCancel = cancelPacket
                     }
-                    SPacket.add(packet as Packet<INetHandlerPlayClient>)
-                    event.cancelEvent()
+                    if (packet is SPacketConfirmTransaction && grimTCancel > 0) {
+                        event.cancelEvent()
+                        grimTCancel--
+                    }
                 }
             }
-            cancelPackets--
+            "Blink" -> {
+                if (packet1 is SPacketEntityVelocity) {
+                    if(mc.theWorld?.getEntityByID(packet1.entityID) != thePlayer) return
+
+                    event.cancelEvent()
+                    cancelPackets = 3
+                }else if(packet1 is SPacketExplosion){
+                    event.cancelEvent()
+                }
+
+
+                if(cancelPackets > 0){
+                    startBlink()
+                }
+            }
+        }
+
+        //Auto Disable
+        if (packet1 is SPacketPlayerPosLook){
+            if (disable.get()){
+                val velocity = LiquidBounce.moduleManager.getModule(GrimVelocity::class.java) as GrimVelocity
+                velocity.state = false
+                if (reEnable.get()){
+                    Thread {
+                        try {
+                            Thread.sleep(1000)
+                            velocity.state = true
+                        } catch (ex: InterruptedException) {
+                            ex.printStackTrace()
+                        }
+                    }.start()
+                }
+            }
         }
     }
+
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if((OnlyMove.get()&&!MovementUtils.isMoving)||(OnlyGround.get()&&!mc.thePlayer!!.onGround)){return}
+    fun onUpdate(event: UpdateEvent) {
+        updatesFDP++
+
+        if (resetPersecFDP > 0) {
+            if (updatesFDP >= 0 || updatesFDP >= resetPersecFDP) {
+                updatesFDP = 0
+                if (grimTCancel > 0) {
+                    grimTCancel--
+                }
+            }
+        }
         updates++
         if (resetPersec > 0) {
-            if (updates >= 0 || updates > resetPersec) {
+            if (updates >= 0 || updates >= resetPersec) {
                 updates = 0
                 if (cancelPackets > 0){
                     cancelPackets--
                 }
             }
         }
-
-
-        if(cancelPackets == 0 || !bllnk){
-            if(DelayClientPacket.get()){
-                while (packets.size > 0 &&!packets.isEmpty()) {
-                    mc2.connection!!.networkManager.sendPacket(packets.take())
-                    packets.clear()
-                    debug("blink")
-                }
-            }
-            if(C0fResend.get()){
-                while (!C0fPacket.isEmpty()) {
-                    mc2.connection!!.networkManager.sendPacket(C0fPacket.take())
-                    C0fPacket.clear()
-                    debug("C0fResend")
-                }
-            }
-            if(S32Test.get()){
-                while (!S32Packet.isEmpty()&&S32Packet.size > 0) {
-                    S32Packet.poll()?.processPacket(mc2.connection as INetHandlerPlayClient)
-                    S32Packet.clear()
-                    debug("S32Test")
-                }
-            }
-            if(ServerPacketTest.get()){
-                while (SPacket.size > 0 && !SPacket.isEmpty()) {
-                    SPacket.poll()?.processPacket(mc2.connection as INetHandlerPlayClient)
-                    SPacket.clear()
-                    debug("STest")
-                }
+        if(cancelPackets == 0){
+            if (modeValue.get() == "Blink"){
+                closeblink()
             }
         }
     }
-
+    private fun closeblink() {
+        try {
+            disableLogger = true
+            while (!packets.isEmpty()) {
+                mc2.connection!!.networkManager.sendPacket(packets.take())
+            }
+            while (!inBus.isEmpty()) {
+                inBus.poll()?.processPacket(mc2!!.connection)
+            }
+            disableLogger = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            disableLogger = false
+        }
+    }
 }

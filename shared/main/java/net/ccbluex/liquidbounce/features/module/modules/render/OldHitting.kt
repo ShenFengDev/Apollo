@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "OldHitting", description = "faq", category = ModuleCategory.RENDER, array = false)
 class OldHitting : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("None","LB","MineCraft", "Reverse", "Strange","ETB", "Test", "Jello", "SigmaOld","Zoom","Push", "SideDown"), "MineCraft")
+    private val modeValue = ListValue("Mode", arrayOf("None","RedBone","MineCraft", "Reverse", "Strange","ETB", "Test", "Jello", "SigmaOld","Zoom","Push", "SideDown"), "MineCraft")
 
     private val onlySword = BoolValue("Only-Sword", true)
 
@@ -25,7 +25,7 @@ class OldHitting : Module() {
 
     companion object {
         @JvmField
-         val SpeedSwing = FloatValue("SpeedSwing", 4F, 0F, 20F)
+         val SpeedSwing = FloatValue("SpeedSwing", 1.8F, 0F, 20F)
         @JvmField
         var itemPosX = FloatValue("itemPosX", 0f, -1f, 1f)
         @JvmField
@@ -34,8 +34,8 @@ class OldHitting : Module() {
         var itemPosZ = FloatValue("itemPosZ", 0f, -1f, 1f)
         @JvmField
         var Scale = FloatValue("Scale", 1f, 0f, 2f)
-        @JvmField
-        val guiAnimations: ListValue? = ListValue("Container-Animation", arrayOf("None", "Zoom", "VSlide", "HSlide", "HVSlide"), "Zoom")
+
+
 
     }
     override val tag: String

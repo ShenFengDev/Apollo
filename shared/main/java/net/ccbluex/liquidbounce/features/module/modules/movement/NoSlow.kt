@@ -46,7 +46,7 @@ class NoSlow : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent){
 
-            if (event.packet.unwrap() is SPacketWindowItems) {
+            if (event.packet is SPacketWindowItems) {
                 if (mc.thePlayer!!.isUsingItem) {
                     event.cancelEvent()
                 }
@@ -120,5 +120,5 @@ class NoSlow : Module() {
 
 
     override val tag: String
-        get() = "GrimAC"
+        get() = "Grim"
 }
