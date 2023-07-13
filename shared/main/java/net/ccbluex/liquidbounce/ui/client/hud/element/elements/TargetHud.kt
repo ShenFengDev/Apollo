@@ -746,20 +746,42 @@ class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.M
         }
 
         // healthstage2
-        if (healthstage2)
-            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f, 4F, 2F, c5, c6, c1, c2);
-
+        if (healthstage2) {
+            RoundedUtil.drawGradientRound(
+                35f,
+                26F,
+                ((getHealth(target) / target.maxHealth) * width) / 1.5f,
+                4F,
+                2F,
+                c5,
+                c6,
+                c1,
+                c2
+            );
+        }
 
         // Health bar
        // RenderUtils.drawRect(0F, 34F, (getHealth(target) / target.maxHealth) * width,
         //    36F, ColorUtils.ALLColor(200).rgb)
 
         // healthstage3
-        if (healthstage3)
-            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f , 4F, 2F, c3, c4, c5, c6);
+        if (healthstage3) {
+            RoundedUtil.drawGradientRound(
+                35f,
+                26F,
+                ((getHealth(target) / target.maxHealth) * width) / 1.5f,
+                4F,
+                2F,
+                c3,
+                c4,
+                c5,
+                c6
+            );
+        }
 
 
-        target.name.let { FontLoaders.F18.drawString(it!!, 36, 3, Color.WHITE.rgb) }
+            FontLoaders.F18.drawString(target.name, 36, 3, Color.WHITE.rgb)
+
         Fonts.font35.drawString("HP: ${decimalFormat.format(target.health)}", 35, 15, 0xffffff)
 
         // Draw Head

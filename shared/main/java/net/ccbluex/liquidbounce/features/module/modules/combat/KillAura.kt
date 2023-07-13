@@ -1533,7 +1533,7 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         inline get() = mc.gameSettings.keyBindAttack.pressed||mc.thePlayer!!.spectator || !isAlive(mc.thePlayer!!)
-                 || LiquidBounce.moduleManager[FreeCam::class.java].state
+                ||LiquidBounce.moduleManager[Blink::class.java].state|| LiquidBounce.moduleManager[FreeCam::class.java].state
 
     /**
      * Check if [entity] is alive
