@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.utils.item;
 
 import net.ccbluex.liquidbounce.api.minecraft.item.IItemStack;
 
+import java.util.Objects;
+
 public class ArmorPiece {
     private final IItemStack itemStack;
     private final int slot;
@@ -18,7 +20,7 @@ public class ArmorPiece {
     }
 
     public int getArmorType() {
-        return itemStack.getItem().asItemArmor().getArmorType();
+        return Objects.requireNonNull(itemStack.getItem()).asItemArmor().getArmorType();
     }
 
     public int getSlot() {

@@ -96,11 +96,7 @@ public abstract class MixinGuiButton extends Gui {
             fontRenderer.drawStringWithShadow(displayString, (float) ((this.x + this.width / 2) - fontRenderer.getStringWidth(displayString) / 2), this.y + (this.height - 5) / 2F, 14737632);
             AWTFontRenderer.Companion.setAssumeNonVolatile(false);
             //RenderUtils.drawBorderedRect(this.x + (int) this.cut, this.y, this.x + this.width - (int) this.cut, this.y + this.height, 1.5f, new Color(225, 225, 225, 255).getRGB(), new Color(200, 200, 200, 20).getRGB());
-if (HUD.Hotbarblur.get()) {
-    GL11.glPushMatrix();
-    BlurBuffer.blurArea2(this.x + (int) this.cut, this.y, this.x + this.width - (int) this.cut, this.y + this.height);
-    GL11.glPopMatrix();
-}
+
 
 
             mc.getTextureManager().bindTexture(BUTTON_TEXTURES);

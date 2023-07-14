@@ -31,7 +31,7 @@ class AutoPlay : Module() {
     private var clickState = 0
     private val autogg = BoolValue("AutoGG", true)
     private val Clientname = TextValue("Clientname","PridePlus")
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "Minemora", "HuaYuTing"), "HuaYuTingGG")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "Minemora", "HuaYuTing"), "HuaYuTing")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false

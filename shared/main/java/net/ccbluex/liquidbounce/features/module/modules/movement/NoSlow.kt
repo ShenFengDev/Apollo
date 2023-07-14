@@ -46,11 +46,13 @@ class NoSlow : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent){
 
-            if (event.packet is SPacketWindowItems) {
+          /*  if (event.packet is SPacketWindowItems) {
                 if (mc.thePlayer!!.isUsingItem) {
                     event.cancelEvent()
                 }
             }
+
+           */
 
     }
 

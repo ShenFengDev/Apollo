@@ -13,6 +13,9 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
+import org.lwjgl.opengl.GL11
 
 /**
  * CustomHUD effects element
@@ -23,7 +26,7 @@ import net.ccbluex.liquidbounce.value.FontValue
 class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
               side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
 
-    private val fontValue = FontValue("Font", Fonts.font35)
+    private val fontValue = Fonts.minecraftFont
     private val shadow = BoolValue("Shadow", true)
 
     /**
@@ -33,7 +36,7 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
         var y = 0F
         var width = 0F
 
-        val fontRenderer = fontValue.get()
+        val fontRenderer = fontValue
 
         assumeNonVolatile = true
 
@@ -41,17 +44,17 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
             val potion = functions.getPotionById(effect.potionID)
 
             val number = when {
-                effect.amplifier == 1 -> "II"
-                effect.amplifier == 2 -> "III"
-                effect.amplifier == 3 -> "IV"
-                effect.amplifier == 4 -> "V"
-                effect.amplifier == 5 -> "VI"
-                effect.amplifier == 6 -> "VII"
-                effect.amplifier == 7 -> "VIII"
-                effect.amplifier == 8 -> "IX"
-                effect.amplifier == 9 -> "X"
-                effect.amplifier > 10 -> "X+"
-                else -> "I"
+                effect.amplifier == 1 -> "二"
+                effect.amplifier == 2 -> "三"
+                effect.amplifier == 3 -> "四"
+                effect.amplifier == 4 -> "五"
+                effect.amplifier == 5 -> "六"
+                effect.amplifier == 6 -> "七"
+                effect.amplifier == 7 -> "八"
+                effect.amplifier == 8 -> "九"
+                effect.amplifier == 9 -> "十"
+                effect.amplifier > 10 -> "十一"
+                else -> "一"
             }
 
             val name = "${functions.formatI18n(potion.name)} $number§f: §7${effect.getDurationString()}"
@@ -59,9 +62,30 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
 
             if (width < stringWidth)
                 width = stringWidth
-
+            if (potion.hasStatusIcon) {
+                GlStateManager.pushMatrix()
+                GL11.glDisable(2929)
+                GL11.glEnable(3042)
+                GL11.glDepthMask(false)
+                OpenGlHelper.glBlendFunc(770, 771, 1, 0)
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+                val statusIconIndex = potion.statusIconIndex
+                mc.textureManager.bindTexture(classProvider.createResourceLocation("textures/gui/container/inventory.png"))
+                mc2.ingameGUI.drawTexturedModalRect(
+                    -stringWidth-20f, //X-pos
+                    (y-5f ).toFloat(),                                 //Y-pos
+                    statusIconIndex % 8 * 18,
+                    198 + statusIconIndex / 8 * 18,
+                    18,
+                    18
+                )
+                GL11.glDepthMask(true)
+                GL11.glDisable(3042)
+                GL11.glEnable(2929)
+                GlStateManager.popMatrix()
+            }
             fontRenderer.drawString(name, -stringWidth, y, potion.liquidColor, shadow.get())
-            y -= fontRenderer.fontHeight
+            y -= fontRenderer.fontHeight + 6f
         }
 
         assumeNonVolatile = false

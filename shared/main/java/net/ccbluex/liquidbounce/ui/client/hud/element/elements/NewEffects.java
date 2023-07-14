@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.api.minecraft.potion.IPotionEffect;
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border;
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
+import net.ccbluex.liquidbounce.ui.cnfont.FontLoaders;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.HanaBiColors;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class NewEffects extends Element {
 
     private final Map<IPotion, PotionData> potionMap = new HashMap<>();
-    private static final BoolValue blur = new BoolValue("Blur", true);
+
     /**
      * Draw the entity.
      */
@@ -63,17 +64,13 @@ public class NewEffects extends Element {
             state = Math.max(state, 2.0F);
             potionData.translate.interpolate(0, y, 0.1);
             potionData.animationX = (float) RenderUtils.getAnimationState2(potionData.getAnimationX(), 1.2F * state, Math.max(10.0F, Math.abs(potionData.animationX - 1.2F * state) * 15.0F) * 0.3F);
-            RenderUtils.drawRectPotion(0, potionData.translate.getY(), 120, potionData.translate.getY() + 30F, ClientUtils.reAlpha(HanaBiColors.GREY.c, 0.1F));
+            RenderUtils.drawRectPotion(0, potionData.translate.getY(), 120, potionData.translate.getY() + 30F, ClientUtils.reAlpha(HanaBiColors.GREY.c, 1F));
             RenderUtils.drawRectPotion(0, potionData.translate.getY(), potionData.animationX, potionData.translate.getY() + 30F, ClientUtils.reAlpha((new Color(34, 24, 20)).brighter().getRGB(), 0.3F));
             //RenderUtils.drawShadowWithCustomAlpha(0, Math.round(potionData.translate.getY()), 120, 30, 200);
 
-            if (blur.get()){
-                GL11.glTranslated(-getRenderX(), -getRenderY(), 0);
-                BlurBuffer.blurArea((float) getRenderX() ,(float) getRenderY() + Math.round(potionData.translate.getY()), 120, 30);
-                GL11.glTranslated(getRenderX(), getRenderY(), 0);
-            }
+
             float posY = potionData.translate.getY() + 13F;
-            Fonts.fontSFUI35.drawString(name + " " + intToRomanByGreedy(potionEffect.getAmplifier() + 1), 29F, posY - mc.getFontRendererObj().getFontHeight(), ClientUtils.reAlpha(HanaBiColors.WHITE.c, 0.8F));
+            FontLoaders.F22.drawString(name + " " + intToRomanByGreedy(potionEffect.getAmplifier() + 1), 29F, posY - mc.getFontRendererObj().getFontHeight(), ClientUtils.reAlpha(HanaBiColors.WHITE.c, 0.8F));
             Fonts.font35.drawString(potionEffect.getDurationString(), 29F, posY + 4.0F, ClientUtils.reAlpha((new Color(150, 150, 150)).getRGB(), 1F));
             if (potion.getHasStatusIcon()) {
                 GlStateManager.pushMatrix();

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import co.uk.hexeption.utils.C08PacketPlayerBlockPlacement
 import me.utils.player.PlayerUtil.isMoving
 import me.utils.render.ColorUtils2
 import me.utils.render.GLUtils
@@ -1453,11 +1454,13 @@ class KillAura : Module() {
                 mc.gameSettings.keyBindUseItem.pressed = true
             }
             "C08"->{
-                val blockPos = currentBlock ?: return
-                mc2.connection!!.sendPacket(CPacketPlayerTryUseItemOnBlock(blockPos as BlockPos,
-                    EnumFacing.WEST, EnumHand.OFF_HAND, 0F,0F,0F))
-                mc2.connection!!.sendPacket(CPacketPlayerTryUseItemOnBlock(blockPos as BlockPos,
-                    EnumFacing.WEST, EnumHand.MAIN_HAND, 0F,0F,0F))
+                mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerBlockPlacement(mc.thePlayer!!.inventory.getCurrentItemInHand()))
+                mc2.connection!!.sendPacket(
+                    C08PacketPlayerBlockPlacement(
+                        currentBlock, 255,
+                        EnumHand.MAIN_HAND, 0f, 0f, 0f
+                    )
+                )
             }
             "OldC08"->{
                 val packet = classProvider.createCPacketPlayerBlockPlacement(
@@ -1481,7 +1484,7 @@ class KillAura : Module() {
 
 
 
-    val currentBlock: WBlockPos?
+    private val currentBlock: WBlockPos?
         get() {
             val blockPos = mc.objectMouseOver?.blockPos ?: return null
 

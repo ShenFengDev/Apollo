@@ -739,6 +739,7 @@ class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.M
         val healthstage3 = target.health <((target.maxHealth/3))
 
         // Health bar
+
         //healthstage1
         if(healthstage1){
             RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f, 4F, 2F, c1, c2, c3, c4);
@@ -760,9 +761,6 @@ class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.M
             );
         }
 
-        // Health bar
-       // RenderUtils.drawRect(0F, 34F, (getHealth(target) / target.maxHealth) * width,
-        //    36F, ColorUtils.ALLColor(200).rgb)
 
         // healthstage3
         if (healthstage3) {
@@ -779,19 +777,15 @@ class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.M
             );
         }
 
-
-            FontLoaders.F18.drawString(target.name, 36, 3, Color.WHITE.rgb)
-
+        //draw name
+        FontLoaders.F18.drawString(target.name, 36, 3, Color.WHITE.rgb)
+        //draw HP
         Fonts.font35.drawString("HP: ${decimalFormat.format(target.health)}", 35, 15, 0xffffff)
 
         // Draw Head
         RenderUtils.drawHead(mc.netHandler.getPlayerInfo(target.uniqueID)!!.locationSkin, 1, 1, 32, 32)
-        // Draw info
-        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
-        //if (playerInfo != null) {
-        //    Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
-           //     36, 24, 0xffffff)
-        //}
+
+
     }
     private fun drawZamorozka(target: IEntityLivingBase, easingHealth: Float){
         val font=fontValue.get()
