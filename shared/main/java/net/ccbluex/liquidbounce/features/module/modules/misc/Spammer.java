@@ -46,7 +46,7 @@ public class Spammer extends Module {
         }
     };
 
-    private final TextValue messageValue = new TextValue("Message", LiquidBounce.INSTANCE.getCLIENT_NAME() + " Client | PridePlus On Top | By WaWa");
+    private final TextValue messageValue = new TextValue("Message", LiquidBounce.INSTANCE.getCLIENT_NAME() + " Client | Apollo On Top | By WaWa");
     private final BoolValue customValue = new BoolValue("Custom", false);
 
     private final MSTimer msTimer = new MSTimer();

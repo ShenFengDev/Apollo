@@ -452,7 +452,7 @@ public class Fonts extends MinecraftInstance {
     private static Font getNoti(int size) {
         Font font;
         try {
-            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/notiicon.ttf")).getInputStream();
+            InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("liquidbounce/font/check.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {

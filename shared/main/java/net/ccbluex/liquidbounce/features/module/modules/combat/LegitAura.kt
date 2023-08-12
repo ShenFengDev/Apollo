@@ -94,7 +94,7 @@ class LegitAura : Module() {
 
         val (_, rotation1) = RotationUtils.lockView(
             entity.entityBoundingBox,
-            true && !clickTimer.hasTimePassed(leftDelay / 2),
+            !clickTimer.hasTimePassed(leftDelay / 2),
             true,
             false,
             false,

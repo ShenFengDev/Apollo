@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.color.Rainbow
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.HytGapple
 import net.ccbluex.liquidbounce.features.module.modules.exploit.*
+import net.ccbluex.liquidbounce.features.module.modules.exploit.HytDisabler
 import net.ccbluex.liquidbounce.features.module.modules.misc.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
@@ -48,6 +49,7 @@ class ModuleManager : Listenable {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
         registerModules(
+            LegitAura::class.java,
             AutoGG::class.java,
             NoC03::class.java,
                 SpeedMine::class.java,
@@ -66,7 +68,7 @@ class ModuleManager : Listenable {
                 Trail::class.java,
                MemoryFix::class.java,
             AsianHat::class.java,
-            LZQDisabler::class.java,
+
 
             Ambience::class.java,
                MotionBlur::class.java,
@@ -89,7 +91,7 @@ class ModuleManager : Listenable {
                 HighJump::class.java,
             Spider::class.java,
                 InventoryMove::class.java,
-            Disabler2::class.java,
+            HytDisabler::class.java,
 
                 SafeWalk::class.java,
                 WallClimb::class.java,

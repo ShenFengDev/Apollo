@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.TenacityRectUtil
+import net.ccbluex.liquidbounce.utils.blur.BlurBuffer
 //import net.ccbluex.liquidbounce.utils.ShadowUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
@@ -720,72 +721,29 @@ class TargetHud : Element(0.0,0.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.M
         }
     }
     private fun drawApollo(target: IEntityLivingBase, easingHealth: Float){
-        val width = (38 + Fonts.font40.getStringWidth(target.name!!))
+        val width = (38 +  FontLoaders.xyz20.getStringWidth(target.name!!))
             .coerceAtLeast(118)
             .toFloat()
-        // Draw rect box
-        //RenderUtils.drawBorderedRect(0F, 0F, width, 36F, 5F, Color.BLACK.rgb, Color.BLACK.rgb)
-        RenderUtils.drawRect(0F,0F,width+5f,35F,Color.BLACK.rgb)
+
+        RenderUtils.drawRect(0F,0F,width+5f,35F,Color(0,0,0,150).rgb)
+
+
+
         //colours
         val c1 = ColorUtil.interpolateColorsBackAndForth(17, 0, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
-        val c2 = ColorUtil.interpolateColorsBackAndForth(17, 90, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
-        val c3 = ColorUtil.interpolateColorsBackAndForth(17, 270, Color(230, 230, 55, 205), Color(101, 208, 252, 205), true);
-        val c4 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(230, 230, 55, 205), Color(101, 208, 252, 205), true);
-        val c5 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(255, 0, 0, 205), Color(101, 208, 252, 205), true);
-        val c6 = ColorUtil.interpolateColorsBackAndForth(17, 180, Color(255, 0, 0, 205), Color(101, 208, 252, 205), true);
+        val c2 = ColorUtil.interpolateColorsBackAndForth(17, 90, Color(130, 140, 255, 205), Color(201, 208, 252, 205), true);
 
-        val healthstage1 = target.health>(target.maxHealth / 2)
-        val healthstage2 = target.health <((target.maxHealth/3)*2)
-        val healthstage3 = target.health <((target.maxHealth/3))
-
-        // Health bar
-
-        //healthstage1
-        if(healthstage1){
-            RoundedUtil.drawGradientRound(35f, 26F, ((getHealth(target) / target.maxHealth) * width) / 1.5f, 4F, 2F, c1, c2, c3, c4);
-
-        }
-
-        // healthstage2
-        if (healthstage2) {
-            RoundedUtil.drawGradientRound(
-                35f,
-                26F,
-                ((getHealth(target) / target.maxHealth) * width) / 1.5f,
-                4F,
-                2F,
-                c5,
-                c6,
-                c1,
-                c2
-            );
-        }
-
-
-        // healthstage3
-        if (healthstage3) {
-            RoundedUtil.drawGradientRound(
-                35f,
-                26F,
-                ((getHealth(target) / target.maxHealth) * width) / 1.5f,
-                4F,
-                2F,
-                c3,
-                c4,
-                c5,
-                c6
-            );
-        }
-
-        //draw name
-        FontLoaders.F18.drawString(target.name, 36, 3, Color.WHITE.rgb)
+        //healthbar
+        RoundedUtil.drawGradientRound(35f, 26F, ((easingHealth / target.maxHealth) * width) / 1.5f, 4F, 2F, c1, c2, c1, c2);
         //draw HP
         Fonts.font35.drawString("HP: ${decimalFormat.format(target.health)}", 35, 15, 0xffffff)
 
         // Draw Head
         RenderUtils.drawHead(mc.netHandler.getPlayerInfo(target.uniqueID)!!.locationSkin, 1, 1, 32, 32)
 
-
+        //draw name
+        FontLoaders.F18.drawString(target.name, 36, 3, Color.WHITE.rgb)
+        //Fonts.minecraftFont.drawStringWithShadow(target.name!!, 36, 3, Color.WHITE.rgb)
     }
     private fun drawZamorozka(target: IEntityLivingBase, easingHealth: Float){
         val font=fontValue.get()

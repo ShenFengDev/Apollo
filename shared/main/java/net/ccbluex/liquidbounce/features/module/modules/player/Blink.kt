@@ -58,8 +58,8 @@ class Blink : Module() {
         if (packet is Position || packet is PositionRotation ||
             packet is CPacketPlayerTryUseItemOnBlock ||
             packet is CPacketAnimation ||
-            packet is CPacketEntityAction || packet is CPacketUseEntity ||packet is CPacketPlayerTryUseItem|| (packet::class.java.simpleName.startsWith("C", true) && hytValue.get())
-        ) {
+            packet is CPacketEntityAction || packet is CPacketUseEntity ||packet is CPacketPlayerTryUseItem)
+         {
             event.cancelEvent()
             packets.add(packet)
         }

@@ -161,19 +161,19 @@ class Notification(val title: String, val content: String, val type: NotifyType,
         var string = ""
 
         if (type.toString() == "SUCCESS") {
-            string = "a"
+            string = "o"
 
         }
         if (type.toString() == "ERROR") {
-            string = "B"
+            string = "p"
 
         }
         if (type.toString() == "WARNING") {
-            string = "D"
+            string = "r"
 
         }
         if (type.toString() == "INFO") {
-            string = "C"
+            string = "m"
 
         }
 
@@ -181,7 +181,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
         // RenderUtils.drawShadow(-22, 0, width + 22, height)
         //RenderUtils.drawRect(-22F, 0F, width.toFloat(), height.toFloat(), Color(255, 255, 255, 225))
         //RenderUtils.drawRect(-22F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 150))
-        RoundedUtil.drawRound(-22f,0f,width.toFloat()+10f,height.toFloat()-10f,4f,Color(255, 255, 255, 225))
+        RoundedUtil.drawRound(-22f,0f,width.toFloat()+20f,height.toFloat()-10f,2f,Color(255, 255, 255, 225))
 
         //Fonts.font35.drawString(title, 7F, 5F, Color(0, 0, 0, 225).rgb)
         Fonts.font30.drawString(content, 7F, 8F, Color(0, 0, 0, 225).rgb)

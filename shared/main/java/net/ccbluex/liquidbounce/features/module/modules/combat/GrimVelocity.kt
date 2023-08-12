@@ -3,23 +3,27 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.injection.backend.unwrap
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.Packet
+import net.minecraft.network.ThreadQuickExitException
 import net.minecraft.network.play.INetHandlerPlayClient
-import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.CPacketConfirmTeleport
+import net.minecraft.network.play.client.CPacketConfirmTransaction
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.network.play.server.SPacketConfirmTransaction
+import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketEntityVelocity
-import net.minecraft.network.play.server.SPacketExplosion
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import java.util.*
-import java.util.concurrent.LinkedBlockingQueue
+
+/**
+ *  基于XiChenQi的代码重写的GrimFull 可以在1.12站着被打
+ *  不知道为什么会报post，处理数据包的方式应该是合法的
+ */
 
 /**
  * skid by XiChenQi
@@ -27,159 +31,150 @@ import java.util.concurrent.LinkedBlockingQueue
  * 解决大部分 不显示 不会拉的问题，并且整合了VelocityBlink
  */
 
-@ModuleInfo(name = "GrimVelocity", description = "GrimFull", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "GrimVelocity", description = "GrimAC 2.3.43 release -", category = ModuleCategory.COMBAT)
 class GrimVelocity : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("CancelS32","Blink"),"Blink")
-    private val disable = BoolValue("AutoDisable",true)
-    private val reEnable = BoolValue("ReEnable",true)
-    //FDP
-    private var cancelPacket = 6
-    private var resetPersecFDP = 8
-    private var grimTCancel = 0
-    private var updatesFDP = 0
-
-    //Kid
-    private var cancelPackets = 0
-    private var resetPersec = 8
-    private var updates = 0
-
-    //VelocityBlink调用的函数
-    //startBlink()
-    //closeblink()
-    private val packets = LinkedBlockingQueue<Packet<*>>()
-    private var disableLogger = false
+    private var waitC03 = false
+    private var canProcessNext = true
+    private var nextIsTeleport = false
+    private var lastReceivedTransaction : SPacketConfirmTransaction ?= null
     private val inBus = LinkedList<Packet<INetHandlerPlayClient>>()
 
-
-    override fun onEnable() {
-        grimTCancel = 0
-        cancelPackets = 0
+    override fun onEnable(){
+        waitC03 = false
+        canProcessNext = true
+        nextIsTeleport = false
+        lastReceivedTransaction = null
     }
     override fun onDisable(){
-        if (modeValue.get().equals("New")) {
-            closeblink()
-        }
+        closeBlink(false)
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val thePlayer = mc.thePlayer ?: return
-
-        val packet = event.packet
-        val packet1 = event.packet.unwrap()
-        fun startBlink(){
-            val packet2 = event.packet.unwrap()
-            if (mc.thePlayer == null || disableLogger) return
-            if (packet2 is CPacketPlayer)
-                event.cancelEvent()
-            if (packet2 is CPacketPlayer.Position || packet2 is CPacketPlayer.PositionRotation ||
-                packet2 is CPacketPlayerTryUseItemOnBlock ||
-                packet2 is CPacketAnimation ||
-                packet2 is CPacketEntityAction || packet2 is CPacketUseEntity || (packet2::class.java.simpleName.startsWith("C", true))
-            ) {
-                event.cancelEvent()
-                packets.add(packet2)
+        val pw = event.packet.unwrap()
+        if (pw is SPacketChat) {
+            return
+        } else if (pw is SPacketEntityVelocity && pw.entityID == mc.thePlayer?.entityId) {
+            event.cancelEvent()
+            inBus.add(pw)
+            waitC03 = true
+        } else if (pw is SPacketDisconnect && waitC03) {
+            inBus.clear()
+            waitC03 = false
+        } else if (pw is SPacketPlayerPosLook && waitC03) {
+            event.cancelEvent()
+            inBus.add(pw)
+            if (processTeleport(false)) waitC03 = false
+            canProcessNext = true
+            lastReceivedTransaction = null
+        } else if (pw::class.java.getSimpleName().startsWith("S", true) && waitC03) {
+            event.cancelEvent()
+            try {
+                inBus.add(pw as Packet<INetHandlerPlayClient>) // md这个地方怎么转类型都报warn气死我了
+            } catch (e: Exception) {
+                e.printStackTrace()
+                inBus.clear()
+                waitC03 = false
             }
-            if(packet2::class.java.simpleName.startsWith("S", true)) {
-                if(packet2 is SPacketEntityVelocity && (mc.theWorld?.getEntityByID(packet2.entityID) ?: return) == mc.thePlayer){return}
-                event.cancelEvent()
-                inBus.add(packet2 as Packet<INetHandlerPlayClient>)
-            }
-        }
-        when(modeValue.get()){
-            "CancelS32" -> {
-                if (MovementUtils.isMoving) {
-                    if (classProvider.isSPacketEntityVelocity(packet)) {
-                        val packetEntityVelocity = packet.asSPacketEntityVelocity()
-
-                        if ((mc.theWorld?.getEntityByID(packetEntityVelocity.entityID) ?: return) != thePlayer)
-                            return
-
-                        event.cancelEvent()
-                        grimTCancel = cancelPacket
-                    }
-                    if (packet is SPacketConfirmTransaction && grimTCancel > 0) {
-                        event.cancelEvent()
-                        grimTCancel--
-                    }
-                }
-            }
-            "Blink" -> {
-                if (packet1 is SPacketEntityVelocity) {
-                    if(mc.theWorld?.getEntityByID(packet1.entityID) != thePlayer) return
-
-                    event.cancelEvent()
-                    cancelPackets = 3
-                }else if(packet1 is SPacketExplosion){
-                    event.cancelEvent()
-                }
-
-
-                if(cancelPackets > 0){
-                    startBlink()
-                }
+        } else if ((pw is CPacketPlayer.Position || pw is CPacketPlayer.PositionRotation) && !nextIsTeleport && canProcessNext && waitC03) {
+            if (processVelocity(false)) waitC03 = false
+            if (lastReceivedTransaction != null) canProcessNext = false
+        } else if (pw is CPacketConfirmTransaction) {
+            val _lastReceivedTransaction = lastReceivedTransaction
+            if (_lastReceivedTransaction != null && pw.windowId == _lastReceivedTransaction.windowId && pw.uid == _lastReceivedTransaction.actionNumber) {
+                canProcessNext = true
+                lastReceivedTransaction = null
             }
         }
-
-        //Auto Disable
-        if (packet1 is SPacketPlayerPosLook){
-            if (disable.get()){
-                val velocity = LiquidBounce.moduleManager.getModule(GrimVelocity::class.java) as GrimVelocity
-                velocity.state = false
-                if (reEnable.get()){
-                    Thread {
-                        try {
-                            Thread.sleep(1000)
-                            velocity.state = true
-                        } catch (ex: InterruptedException) {
-                            ex.printStackTrace()
-                        }
-                    }.start()
-                }
-            }
+        if (pw is CPacketConfirmTeleport) {
+            nextIsTeleport = true
+        } else if (pw::class.java.getSimpleName().startsWith("C", true) && nextIsTeleport) {
+            nextIsTeleport = false
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        updatesFDP++
-
-        if (resetPersecFDP > 0) {
-            if (updatesFDP >= 0 || updatesFDP >= resetPersecFDP) {
-                updatesFDP = 0
-                if (grimTCancel > 0) {
-                    grimTCancel--
-                }
-            }
-        }
-        updates++
-        if (resetPersec > 0) {
-            if (updates >= 0 || updates >= resetPersec) {
-                updates = 0
-                if (cancelPackets > 0){
-                    cancelPackets--
-                }
-            }
-        }
-        if(cancelPackets == 0){
-            if (modeValue.get() == "Blink"){
-                closeblink()
-            }
-        }
-    }
-    private fun closeblink() {
-        try {
-            disableLogger = true
-            while (!packets.isEmpty()) {
-                mc2.connection!!.networkManager.sendPacket(packets.take())
-            }
+    private fun closeBlink(instant: Boolean) {
+        if (instant) {
             while (!inBus.isEmpty()) {
-                inBus.poll()?.processPacket(mc2!!.connection)
+                try {
+                    val packetIn = inBus.poll() ?: continue
+                    packetIn.processPacket(mc2?.connection ?: continue)
+                } catch (e: ThreadQuickExitException) {
+                    continue
+                }
             }
-            disableLogger = false
-        } catch (e: Exception) {
-            e.printStackTrace()
-            disableLogger = false
+        } else {
+            while (!inBus.isEmpty()) {
+                val packetIn = inBus.poll() ?: continue
+                val scheduler = mc2 ?: continue
+                val processor = scheduler.connection ?: continue
+                scheduler.addScheduledTask(Runnable()
+                {
+                    packetIn.processPacket(processor)
+                })
+            }
+        }
+    }
+
+    private fun processTeleport(instant: Boolean):Boolean {
+        if (instant) {
+            while (!inBus.isEmpty()) {
+                try {
+                    val packetIn = inBus.poll() ?: continue
+                    //logTransaction(packetIn)
+                    packetIn.processPacket(mc2?.connection ?: continue)
+                    if (packetIn is SPacketPlayerPosLook) break
+                } catch (e: ThreadQuickExitException) {
+                    continue
+                }
+            }
+        } else {
+            while (!inBus.isEmpty()) {
+                val packetIn = inBus.poll() ?: continue
+                val scheduler = mc2 ?: continue
+                val processor = scheduler.connection ?: continue
+                //logTransaction(packetIn)
+                scheduler.addScheduledTask(Runnable()
+                {
+                    packetIn.processPacket(processor)
+                })
+                if (packetIn is SPacketPlayerPosLook) break
+            }
+        }
+        return inBus.isEmpty()
+    }
+
+    private fun processVelocity(instant: Boolean):Boolean {
+        if (instant) {
+            while (!inBus.isEmpty()) {
+                try {
+                    val packetIn = inBus.poll() ?: continue
+                    if (packetIn is SPacketEntityVelocity && packetIn.entityID == mc.thePlayer?.entityId) break
+                    logTransaction(packetIn)
+                    packetIn.processPacket(mc2?.connection ?: continue)
+                } catch (e: ThreadQuickExitException) {
+                    continue
+                }
+            }
+        } else {
+            while (!inBus.isEmpty()) {
+                val packetIn = inBus.poll() ?: continue
+                if (packetIn is SPacketEntityVelocity && packetIn.entityID == mc.thePlayer?.entityId) break
+                val scheduler = mc2 ?: continue
+                val processor = scheduler.connection ?: continue
+                logTransaction(packetIn)
+                scheduler.addScheduledTask(Runnable()
+                {
+                    packetIn.processPacket(processor)
+                })
+            }
+        }
+        return inBus.isEmpty()
+    }
+
+    private fun logTransaction(packetIn: Packet<INetHandlerPlayClient>) {
+        if (packetIn is SPacketConfirmTransaction) {
+            lastReceivedTransaction = packetIn
         }
     }
 }

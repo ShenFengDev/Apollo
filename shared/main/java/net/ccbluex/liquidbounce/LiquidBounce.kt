@@ -53,7 +53,7 @@ object LiquidBounce {
 
     // Client information
      var CLIENT_NAME = "Apollo"
-    const val CLIENT_VERSION = 1.4
+    const val CLIENT_VERSION = 1.51
     const val CLIENT_CREATOR = "LiquidBounce-Team"
     const val MINECRAFT_VERSION = Backend.MINECRAFT_VERSION
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
@@ -199,7 +199,7 @@ object LiquidBounce {
         Display.setTitle(CLIENT_NAME + " B" + CLIENT_VERSION)
 
       Sound()
-//        displayTray("PridePlus", "Thanks Use", TrayIcon.MessageType.NONE)
+//        displayTray("Apollo", "Thanks Use", TrayIcon.MessageType.NONE)
 //      Sound.INSTANCE.Spec()
 
         // Set is starting status

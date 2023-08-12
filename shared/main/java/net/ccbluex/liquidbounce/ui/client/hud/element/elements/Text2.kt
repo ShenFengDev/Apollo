@@ -194,7 +194,7 @@ class Text2(
                 getClientName(0,3), 5.0f, 0.0f,Color(255,255,255,220).rgb
             )
             FontLoaders.F24.drawString(
-                "CN", 5F + FontLoaders.F24.getStringWidth("PridePlus"), 13.0f,Color(255,255,255,220).rgb
+                "CN", 5F + FontLoaders.F24.getStringWidth("Apollo"), 13.0f,Color(255,255,255,220).rgb
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,220).rgb)
             FontLoaders.F24.drawString(

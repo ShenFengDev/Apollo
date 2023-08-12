@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 @SideOnly(Side.CLIENT)
 public class FileManager extends MinecraftInstance {
 
-//    public final File dir = new File(mc.getDataDir(), "PridePlus" + "-" + Backend.MINECRAFT_VERSION_MAJOR + "." + Backend.MINECRAFT_VERSION_MINOR);
+//    public final File dir = new File(mc.getDataDir(), "Apollo" + "-" + Backend.MINECRAFT_VERSION_MAJOR + "." + Backend.MINECRAFT_VERSION_MINOR);
     public final File dir = new File(mc.getDataDir(), "LiquidBounce-1.12.2");
     public final File fontsDir = new File(dir, "fonts");
     public final File settingsDir = new File(dir, "settings");

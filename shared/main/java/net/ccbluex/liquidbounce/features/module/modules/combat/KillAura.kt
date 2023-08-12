@@ -128,7 +128,7 @@ class KillAura : Module() {
     val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
     private val BlockRangeValue = FloatValue("BlockRange", 3f, 0f, 8f)
 
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("Vanilla", "Hyt", "Fake", "HuaYuTing","C08","OldC08", "GameSettings", "UseItem"),"Simple")
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf( "Fake", "HuaYuTing","C08","GameSettings"),"Simple")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val delayedBlockValue = BoolValue("AutoBlock-AfterTck", false)
     private val afterAttackValue = BoolValue("AutoBlock-AfterAttack", false)
@@ -382,7 +382,7 @@ class KillAura : Module() {
 
                 }
                 "hyt"->{
-                    if (RotationUtils.getRotationDifference(target) > 90.0) {
+                    if (RotationUtils.getRotationDifference(target) > 130.0) {
                         val (yaw) = RotationUtils.targetRotation ?: return
                         var strafe = event.strafe
                         var forward = event.forward
@@ -540,63 +540,9 @@ class KillAura : Module() {
 
 
 
-    private fun esp(entity : IEntityLivingBase, partialTicks : Float, radius : Float) {
-        GL11.glPushMatrix()
-        GL11.glDisable(3553)
-        GLUtils.startSmooth()
-        GL11.glDisable(2929)
-        GL11.glDepthMask(false)
-        GL11.glLineWidth(1.0F)
-        GL11.glBegin(3)
-        val x: Double = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.renderManager.viewerPosX
-        val y: Double = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.renderManager.viewerPosY
-        val z: Double = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.renderManager.viewerPosZ
-        for (i in 0..360) {
-            val rainbow = Color(Color.HSBtoRGB((mc.thePlayer!!.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
-            GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-            GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y + espAnimation, z + radius * sin(i * 6.283185307179586 / 45.0))
-        }
-        GL11.glEnd()
-        GL11.glDepthMask(true)
-        GL11.glEnable(2929)
-        GLUtils.endSmooth()
-        GL11.glEnable(3553)
-        GL11.glPopMatrix()
-    }
 
-    private fun drawESP(entity: IEntityLivingBase, color: Int, e: Render3DEvent) {
-        val x: Double =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * e.partialTicks.toDouble() - mc.renderManager.renderPosX
-        val y: Double =
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * e.partialTicks.toDouble() - mc.renderManager.renderPosY
-        val z: Double =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * e.partialTicks.toDouble() - mc.renderManager.renderPosZ
-        val radius = 0.15f
-        val side = 4
-        GL11.glPushMatrix()
-        GL11.glTranslated(x, y + 2, z)
-        GL11.glRotatef(-entity.width, 0.0f, 1.0f, 0.0f)
-        RenderUtils.glColor1(color)
-        RenderUtils.enableSmoothLine(1.5F)
-        val c = Cylinder()
-        GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
-        c.drawStyle = 100012
-        RenderUtils.glColor(Color(80,255,80,200))
-        c.draw(0F, radius, 0.3f, side, 1)
-        c.drawStyle = 100012
-        GL11.glTranslated(0.0, 0.0, 0.3)
-        c.draw(radius, 0f, 0.3f, side, 1)
-        GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
-        c.drawStyle = 100011
-        GL11.glTranslated(0.0, 0.0, -0.3)
-        RenderUtils.glColor1(color)
-        c.draw(0F, radius, 0.3f, side, 1)
-        c.drawStyle = 100011
-        GL11.glTranslated(0.0, 0.0, 0.3)
-        c.draw(radius, 0F, 0.3f, side, 1)
-        RenderUtils.disableSmoothLine()
-        GL11.glPopMatrix()
-    }
+
+
 
     /**
      * Render event
@@ -903,75 +849,7 @@ class KillAura : Module() {
                 drawCircle(posX, posY + yPos, posZ, jelloWidthValue.get(), radius, r, g, b, al)
 
                 post3D()
-//                val drawTime = (System.currentTimeMillis() % 2000).toInt()
-//                val drawMode = drawTime > 1000
-//                var drawPercent = drawTime / 1000.0
-//
-//                //true when goes up
-//                if (!drawMode) {
-//                    drawPercent = 1 - drawPercent
-//                } else {
-//                    drawPercent -= 1
-//                }
-//                drawPercent = EaseUtils.easeInOutQuad(drawPercent)
-//                val points = mutableListOf<WVec3>()
-//                val bb = target!!.entityBoundingBox
-//                val radius = bb.maxX - bb.minX
-//                val height = bb.maxY - bb.minY
-//                val posX = target!!.lastTickPosX + (target!!.posX - target!!.lastTickPosX) * mc.timer.renderPartialTicks
-//                var posY = target!!.lastTickPosY + (target!!.posY - target!!.lastTickPosY) * mc.timer.renderPartialTicks
-//
-//                if (drawMode) {
-//                    posY -= 0.5
-//                } else {
-//                    posY += 0.5
-//                }
-//                val posZ = target!!.lastTickPosZ + (target!!.posZ - target!!.lastTickPosZ) * mc.timer.renderPartialTicks
-//                for (i in 0..360 step 7) {
-//                    points.add(WVec3(posX - sin(i * Math.PI / 180F) * radius, posY + height * drawPercent, posZ + cos(i * Math.PI / 180F) * radius))
-//                }
-//                points.add(points[0])
-//                //draw
-//                mc.entityRenderer.disableLightmap()
-//                GL11.glPushMatrix()
-//                GL11.glDisable(GL11.GL_TEXTURE_2D)
-//                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-//                GL11.glEnable(GL11.GL_LINE_SMOOTH)
-//                GL11.glEnable(GL11.GL_BLEND)
-//                GL11.glDisable(GL11.GL_DEPTH_TEST)
-//                GL11.glBegin(GL11.GL_LINE_STRIP)
-//                val baseMove = (if (drawPercent > 0.5) {
-//                    1 - drawPercent
-//                } else {
-//                    drawPercent
-//                }) * 2
-//                val min = (height / 60) * 20 * (1 - baseMove) * (if (drawMode) {
-//                    -1
-//                } else {
-//                    1
-//                })
-//                for (i in 0..20) {
-//                    var moveFace = (height / 60F) * i * baseMove
-//                    if (drawMode) {
-//                        moveFace = -moveFace
-//                    }
-//                    val firstPoint = points[0]
-//                    GL11.glVertex3d(firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY, firstPoint.zCoord - mc.renderManager.viewerPosZ)
-//                    GL11.glColor4f(1F, 1F, 1F, 0.7F * (i / 20F))
-//                    for (vec3 in points) {
-//                        GL11.glVertex3d(
-//                            vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-//                            vec3.zCoord - mc.renderManager.viewerPosZ
-//                        )
-//                    }
-//                    GL11.glColor4f(0F, 0F, 0F, 0F)
-//                }
-//                GL11.glEnd()
-//                GL11.glEnable(GL11.GL_DEPTH_TEST)
-//                GL11.glDisable(GL11.GL_LINE_SMOOTH)
-//                GL11.glDisable(GL11.GL_BLEND)
-//                GL11.glEnable(GL11.GL_TEXTURE_2D)
-//                GL11.glPopMatrix()
+
             }
         }
 
@@ -1318,7 +1196,7 @@ class KillAura : Module() {
                     (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
                 )
 
-            val (vec, rotation) = RotationUtils.searchCenter(
+            val (_, rotation) = RotationUtils.searchCenter(
                 boundingBox,
                 outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
                 randomCenterValue.get(),
@@ -1411,12 +1289,7 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(classProvider.createCPacketUseEntity(interactEntity, ICPacketUseEntity.WAction.INTERACT))
         }
         when(autoBlockPacketValue.get()){
-            "Hyt"->{
-                if(mc.thePlayer!!.heldItem != null && mc.thePlayer!!.heldItem!!.item is ItemSword){
-                    mc.gameSettings.keyBindUseItem.pressed = true
-                }
 
-            }
 
             "HuaYuTing" ->{
 
@@ -1447,9 +1320,7 @@ class KillAura : Module() {
                     }
                 }
             }
-            "UseItem"->{
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-            }
+
             "GameSettings"->{
                 mc.gameSettings.keyBindUseItem.pressed = true
             }
@@ -1462,17 +1333,7 @@ class KillAura : Module() {
                     )
                 )
             }
-            "OldC08"->{
-                val packet = classProvider.createCPacketPlayerBlockPlacement(
-                    WBlockPos(
-                        -1,
-                        -1,
-                        -1
-                    ), 255, mc.thePlayer!!.inventory.getCurrentItemInHand(), 0.0f, 0.0f, 0.0f
-                )
-                mc2.connection!!.sendPacket(packet as Packet<*>)
 
-            }
         }
         blockingStatus = true
 
@@ -1499,33 +1360,11 @@ class KillAura : Module() {
     private fun stopBlocking() {
         if (blockingStatus) {
             mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
-            mc.gameSettings.keyBindUseItem.pressed = false
-            if(autoBlockPacketValue.get().equals("Vanilla", true)) {
-                mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN,                         classProvider.getEnumFacing(EnumFacingType.DOWN)))
-            }
-            if(autoBlockPacketValue.get().equals("UseItem", true)) {
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-            }
-
-            if(autoBlockPacketValue.get().equals("GameSettings", true)) {
+            if(mc.gameSettings.keyBindUseItem.pressed){
                 mc.gameSettings.keyBindUseItem.pressed = false
             }
-            if(autoBlockPacketValue.get().equals("Mouse", true)) {
-                Robot().mouseRelease(InputEvent.BUTTON3_DOWN_MASK)
-            }
-            if(autoBlockPacketValue.get().equals("Vanilla", true)) {
-                mc.netHandler.addToSendQueue(
-                    classProvider.createCPacketPlayerDigging(
-                        ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM,
-                        WBlockPos.ORIGIN,
-                        classProvider.getEnumFacing(EnumFacingType.DOWN)
-                    )
-                )
-            }
-            if(autoBlockPacketValue.get().equals("NewC08", true)||autoBlockPacketValue.get().equals("C08", true)||autoBlockPacketValue.get().equals("OldC08", true)) {
-                mc.netHandler.addToSendQueue(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN)))
-                //mc2.connection!!.sendPacket(classProvider.createCPacketPlayerDigging(ICPacketPlayerDigging.WAction.RELEASE_USE_ITEM, if (isMoving()) WBlockPos(-1, -1, -1) else WBlockPos.ORIGIN, classProvider.getEnumFacing(EnumFacingType.DOWN))as Packet<*>)
-            }
+
+
 
             blockingStatus = false
         }
