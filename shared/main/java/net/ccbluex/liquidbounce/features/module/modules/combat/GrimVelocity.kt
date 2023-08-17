@@ -19,6 +19,7 @@ import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import java.util.*
+import kotlin.concurrent.thread
 
 /**
  *  基于XiChenQi的代码重写的GrimFull 可以在1.12站着被打
@@ -62,8 +63,15 @@ class GrimVelocity : Module() {
             inBus.clear()
             waitC03 = false
         } else if (pw is SPacketPlayerPosLook && waitC03) {
-            event.cancelEvent()
-            inBus.add(pw)
+            this.state = false
+            thread{
+                try{
+                    Thread.sleep(1000)
+                    this.state = true
+                }catch (ex: InterruptedException) {
+                    ex.printStackTrace()
+                }
+            }
             if (processTeleport(false)) waitC03 = false
             canProcessNext = true
             lastReceivedTransaction = null

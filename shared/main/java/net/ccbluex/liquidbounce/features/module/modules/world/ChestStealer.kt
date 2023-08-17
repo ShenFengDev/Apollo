@@ -9,20 +9,21 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.inventory.IGuiChest
 import net.ccbluex.liquidbounce.api.minecraft.inventory.ISlot
 import net.ccbluex.liquidbounce.api.minecraft.item.IItemStack
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
+import net.ccbluex.liquidbounce.injection.backend.unwrap
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.item.ItemUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.inventory.ClickType
+import net.minecraft.network.play.client.CPacketClickWindow
 import java.awt.Color
 import kotlin.random.Random
 
@@ -54,7 +55,7 @@ class ChestStealer : Module() {
         }
     }
     private val delayOnFirstValue = BoolValue("DelayOnFirst", false)
-
+    private val instantexploit = BoolValue("tickstealer",false)
     private val takeRandomizedValue = BoolValue("TakeRandomized", false)
     private val onlyItemsValue = BoolValue("OnlyItems", false)
     private val noCompassValue = BoolValue("NoCompass", false)
@@ -99,6 +100,32 @@ class ChestStealer : Module() {
         val scaledResolution = classProvider.createScaledResolution(mc)
         if (this.stealing && this.slientValue.get())
             Fonts.font35.drawCenteredString("Stealing", (scaledResolution.scaledWidth / 2).toFloat(), (scaledResolution.scaledHeight / 2 - 20).toFloat(), Color.WHITE.rgb, true)
+    }
+
+    @EventTarget
+    fun onUpdate(event:UpdateEvent){
+        if (instantexploit.get()) {
+            if (classProvider.isGuiChest(mc.currentScreen)) {
+                val chest = mc.currentScreen?.asGuiChest()
+                val rows = chest?.inventoryRows!! * 9
+                for (i in 0 until rows) {
+                    val slot = chest!!.inventorySlots?.getSlot(i)
+                    if (slot!!.hasStack) {
+                        mc2.connection?.sendPacket(
+                            CPacketClickWindow(
+                                chest?.inventorySlots?.windowId!!,
+                                i,
+                                0,
+                                ClickType.QUICK_MOVE,
+                                slot?.stack!!.unwrap(),
+                                1.toShort()
+                            )
+                        )
+                    }
+                }
+                mc.thePlayer?.closeScreen()
+            }
+        }
     }
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
@@ -197,6 +224,7 @@ class ChestStealer : Module() {
 
     private fun move(screen: IGuiChest, slot: ISlot) {
         screen.handleMouseClick(slot, slot.slotNumber, 0, 1)
+        //mc.netHandler.networkManager.sendPacket(CPacketClickWindow(slot.stack!!.stackSize, slot.slotNumber, 1, null,1)as IPacket)
         delayTimer.reset()
         nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
     }

@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketEntityAction
 
 
@@ -29,7 +30,7 @@ class SuperKnockback : Module() {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (classProvider.isEntityLivingBase(event.targetEntity)) {
+        if (classProvider.isEntityLivingBase(event.targetEntity) || event.targetEntity is EntityLivingBase) {
             if (event.targetEntity!!.asEntityLivingBase().hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()) ||
                 (!isMoving() && onlyMoveValue.get()) || (!mc.thePlayer!!.onGround && onlyGroundValue.get())) {
                 return
@@ -37,15 +38,15 @@ class SuperKnockback : Module() {
             when (modeValue.get().toLowerCase()) {
                 "old"->{
 
-                    if (mc.thePlayer!!.sprinting) {
-                        mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
+                    if (mc2.player.isSprinting) {
+                        mc2.player.isSprinting = false
                     }
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.STOP_SPRINTING))
                     mc.netHandler.addToSendQueue(classProvider.createCPacketEntityAction(mc.thePlayer!!, ICPacketEntityAction.WAction.START_SPRINTING))
 
                     mc.thePlayer!!.sprinting = true
-                    mc.thePlayer!!.serverSprintState = true
+                    mc2.player.serverSprintState = true
                 }
                 "smart" -> {
                     if(mc.thePlayer!!.sprinting){

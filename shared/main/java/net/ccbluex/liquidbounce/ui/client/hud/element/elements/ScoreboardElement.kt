@@ -171,10 +171,10 @@ class ScoreboardElement(
                 for (domain in allowedDomains) {
                     if (name.contains(domain, true)) {
                         name = when (serverValue.get().toLowerCase()) {
-                            "clientname" -> "LiquidBounce.net"
-                            else -> "Apollo"
+                            "clientname" -> "Apollo@2k23"
+                            else -> "Apollo@2k23"
                         }
-                        listColor = ColorUtils.fade(Color(148,87,235),1,1).rgb//Color(148,87,235).rgb
+                        listColor = ColorUtils.fade(Color(255,255,255),10,3).rgb//Color(148,87,235).rgb
                         break
                     }
                 }
