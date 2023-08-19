@@ -10,18 +10,10 @@ import net.ccbluex.liquidbounce.api.minecraft.enchantments.IEnchantment;
 import net.ccbluex.liquidbounce.api.minecraft.item.IItemArmor;
 import net.ccbluex.liquidbounce.api.minecraft.item.IItemStack;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 
 import static net.ccbluex.liquidbounce.utils.item.ItemUtils.getEnchantmentCount;
 
@@ -67,8 +59,8 @@ public class ArmorComparator extends MinecraftInstance implements Comparator<Arm
                     return enchantmentCountCmp;
 
                 // Then durability...
-                IItemArmor o1a = (Objects.requireNonNull(o1.getItemStack().getItem())).asItemArmor();
-                IItemArmor o2a = (Objects.requireNonNull(o2.getItemStack().getItem())).asItemArmor();
+                IItemArmor o1a = (o1.getItemStack().getItem()).asItemArmor();
+                IItemArmor o2a = (o2.getItemStack().getItem()).asItemArmor();
 
                 int durabilityCmp = Integer.compare(o1a.getArmorMaterial().getDurability(o1a.getArmorType()), o2a.getArmorMaterial().getDurability(o2a.getArmorType()));
 
@@ -85,19 +77,13 @@ public class ArmorComparator extends MinecraftInstance implements Comparator<Arm
 
         return compare;
     }
-    private int armorReduction(final ItemStack stack) {
-        final ItemArmor armor = (ItemArmor) stack.getItem();
-        return armor.damageReduceAmount + EnchantmentHelper.getEnchantmentModifierDamage(Collections.singletonList(stack), DamageSource.GENERIC);
-    }
+
     private float getThresholdedDamageReduction(IItemStack itemStack) {
         IItemArmor item = itemStack.getItem().asItemArmor();
 
-        return getDamageReduction(item.getArmorMaterial().getDamageReductionAmount(item.getArmorType()), 0) * (1 - getThresholdedEnchantmentDamageReduction(itemStack));
+        return getDamageReduction(item.getArmorMaterial().getDamageReductionAmount(item.getArmorType()), 0)* (1 - getThresholdedEnchantmentDamageReduction(itemStack));
     }
-    private int getitemtoughness(final ItemStack stack){
-       
-        return 0;
-    }
+
     private float getDamageReduction(int defensePoints, int toughness) {
         return 1 - Math.min(20.0f, Math.max(defensePoints / 5.0f, defensePoints - 1 / (2 + toughness / 4.0f))) / 25.0f;
     }
@@ -106,7 +92,7 @@ public class ArmorComparator extends MinecraftInstance implements Comparator<Arm
         float sum = 0.0f;
 
         for (int i = 0; i < DAMAGE_REDUCTION_ENCHANTMENTS.length; i++) {
-            sum += ItemUtils.getEnchantment(itemStack, DAMAGE_REDUCTION_ENCHANTMENTS[i]);
+            sum += ItemUtils.getEnchantment(itemStack, DAMAGE_REDUCTION_ENCHANTMENTS[i]) ;
         }
 
         return sum;

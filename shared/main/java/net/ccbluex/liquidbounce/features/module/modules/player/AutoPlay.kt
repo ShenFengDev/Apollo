@@ -31,6 +31,7 @@ class AutoPlay : Module() {
     private var clickState = 0
     private val autogg = BoolValue("AutoGG", true)
     private val Clientname = TextValue("Clientname","Apollo")
+    private val soundValue = BoolValue("Music",false)
     private val modeValue = ListValue("Server", arrayOf("RedeSky", "Minemora", "HuaYuTing"), "HuaYuTing")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
@@ -45,7 +46,7 @@ class AutoPlay : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet.unwrap()
-
+        if(!this.state)return
         when (modeValue.get().toLowerCase()) {
             "redesky" -> {
                 if (clicking && (packet is CPacketClickWindow || packet is CPacketPlayerDigging)) {
@@ -70,7 +71,12 @@ class AutoPlay : Module() {
                     if (text.contains("w", true)) {
                         queueAutoPlay {
 
-                            SoundPlayer().playSound(SoundPlayer.SoundType.VICTORY, LiquidBounce.moduleManager.toggleVolume);
+                            if(soundValue.get()) {
+                                SoundPlayer().playSound(
+                                    SoundPlayer.SoundType.VICTORY,
+                                    LiquidBounce.moduleManager.toggleVolume
+                                );
+                            }
                             mc.thePlayer!!.sendChatMessage("/join")
                         }
                     }
@@ -95,9 +101,12 @@ class AutoPlay : Module() {
 
                             mc.thePlayer!!.sendChatMessage("["+Clientname.get()+"] GG")
                         }
-
-                        SoundPlayer().playSound(SoundPlayer.SoundType.VICTORY, LiquidBounce.moduleManager.toggleVolume);
-
+                        if(soundValue.get()) {
+                            SoundPlayer().playSound(
+                                SoundPlayer.SoundType.VICTORY,
+                                LiquidBounce.moduleManager.toggleVolume
+                            );
+                        }
                         Recorder.totalPlayed++
                     }else if (text.contains("[起床战争] Game 结束！感谢您的参与！", true)) {
                         LiquidBounce.hud.addNotification(Notification(name,"Game Over", NotifyType.INFO))
@@ -105,8 +114,12 @@ class AutoPlay : Module() {
 
                             mc.thePlayer!!.sendChatMessage("["+Clientname.get()+"] GG ")
                         }
-                        SoundPlayer().playSound(SoundPlayer.SoundType.VICTORY, LiquidBounce.moduleManager.toggleVolume);
-
+                        if(soundValue.get()) {
+                            SoundPlayer().playSound(
+                                SoundPlayer.SoundType.VICTORY,
+                                LiquidBounce.moduleManager.toggleVolume
+                            );
+                        }
 
 
                         Recorder.totalPlayed++
