@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow
 import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
+import net.ccbluex.liquidbounce.features.module.modules.movement.HYTNoSlow
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
 
@@ -60,6 +61,7 @@ class ModuleManager : Listenable {
             Rainbow::class.java,
                 AutoBow::class.java,
 
+
             EnchantEffect::class.java,
             BetterFPS::class.java,
             Gident::class.java,
@@ -68,6 +70,7 @@ class ModuleManager : Listenable {
                 AutoPot::class.java,
             PlayerEdit::class.java,
                 Trail::class.java,
+            HYTNoSlow::class.java,
                MemoryFix::class.java,
             AsianHat::class.java,
 

@@ -119,17 +119,13 @@ class NoSlow : Module() {
                     )
 
                 if (event.eventState == EventState.PRE && item) {
-                    if (onPre(event)){
+
                         mc2.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-                    } else {
-                        mc2.connection!!.sendPacket(CPacketConfirmTransaction())
-                        PacketUtils.sendTryUseItem()
-                    }
+
                 }
                 if (event.eventState == EventState.POST && item) {
                     mc2.connection!!.sendPacket(CPacketConfirmTransaction())
-                    mc.netHandler.addToSendQueue(blockPlace1)
-                    mc.netHandler.addToSendQueue(blockPlace2)
+                    PacketUtils.sendTryUseItem()
                 }
             }
             "watchdog" -> {
