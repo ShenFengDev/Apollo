@@ -2,7 +2,7 @@
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge, supporting versions 1.12.2
 
 ## Based
-Based **LiquidBounce** & **Apollo**. Thank **_CCBlueX_** and **_JieMo_**
+Based **LiquidBounce** & **Apollo**. Thank **_CCBlueX_** and **_LakeMM（江心月）_**
 
 
 ## Issues
