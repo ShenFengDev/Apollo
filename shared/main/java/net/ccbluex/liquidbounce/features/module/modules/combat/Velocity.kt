@@ -112,6 +112,15 @@ class Velocity : Module() {
 
 
             "grimreduce"->{
+                if (thePlayer.hurtTime > 0 && thePlayer.onGround) {
+                    thePlayer.motionY = 0.42
+
+                    val yaw = thePlayer.rotationYaw * 0.017453292F
+
+                    thePlayer.motionX -= sin(yaw) * 0.2
+                    thePlayer.motionZ += cos(yaw) * 0.2
+
+                }
                 if (thePlayer.hurtTime > 0) {
                     thePlayer.motionX += -1.0E-7
                     thePlayer.motionY += -1.0E-7

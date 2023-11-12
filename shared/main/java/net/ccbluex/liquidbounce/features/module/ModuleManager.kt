@@ -49,6 +49,7 @@ class ModuleManager : Listenable {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
         registerModules(
+            NoXZ::class.java,
             AutoSkyWars::class.java,
             LegitAura::class.java,
             AutoGG::class.java,

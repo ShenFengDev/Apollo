@@ -4,6 +4,8 @@ import net.ccbluex.liquidbounce.api.minecraft.network.IPacket
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem
+import net.minecraft.util.EnumHand
 
 object PacketUtils : MinecraftInstance() {
     private val packets = ArrayList<Packet<INetHandlerPlayServer>>()
@@ -16,7 +18,11 @@ object PacketUtils : MinecraftInstance() {
         }
         return false
     }
-
+    @JvmStatic
+    fun sendTryUseItem() {
+        mc2.connection!!.sendPacket(CPacketPlayerTryUseItem(EnumHand.MAIN_HAND))
+        mc2.connection!!.sendPacket(CPacketPlayerTryUseItem(EnumHand.OFF_HAND))
+    }
     @JvmStatic
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
