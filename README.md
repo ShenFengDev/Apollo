@@ -1,5 +1,5 @@
 # Apollo
-A free mixin-based injection hacked-client for Minecraft using Minecraft Forge, supporting versions 1.12.2
+A free mixin-based injection hacked-client for 我的世界（花雨庭服务器） using Minecraft Forge, supporting versions 1.12.2
 
 ## Based
 Based **LiquidBounce** & **Apollo**. Thank **_CCBlueX_** and **_LakeMM（江心月）_**
@@ -27,7 +27,7 @@ Do the above and share your source code with everyone; just like we do.
 
 ## Setting up a Workspace
 LiquidBounce is using Gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone https://github.com/CCBlueX/LiquidBounce/`. 
+1. Clone the repository using `git clone https://github.com/ShenFengDev/Apollo`. 
 2. CD into the local repository folder.
 3. Switch to the legacy branch using `git checkout legacy`
 4. Depending on which IDE you are using execute either of the following commands:
